@@ -1,0 +1,6 @@
+
+pandas
+python-dotenv
+pydantic
+fastapi
+streamlit
