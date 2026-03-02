@@ -1,12 +1,12 @@
 from .vectorizer import CustomTFIDF
 from .crowd_logic import apply_crowd_penalty
 
-
 # ASSIGNED TO: Brent
 
 def _cosine_similarity(vec1: dict, vec2: dict) -> float:
     """Calculates the dot product of two L2-normalized sparse vectors."""
     similarity = 0.0
+    # Efficiency: iterate over the smaller vector
     if len(vec1) > len(vec2):
         vec1, vec2 = vec2, vec1
 
@@ -15,7 +15,6 @@ def _cosine_similarity(vec1: dict, vec2: dict) -> float:
             similarity += weight * vec2[word]
 
     return similarity
-
 
 def get_recommendations(user_input: str, locations_data: list[dict], vectorizer_obj: CustomTFIDF, top_n=5):
     """
@@ -32,22 +31,23 @@ def get_recommendations(user_input: str, locations_data: list[dict], vectorizer_
     results = []
 
     for i, loc in enumerate(locations_data):
+        # Retrieve the pre-calculated vector for this location
         loc_vector = vectorizer_obj.doc_vectors[i]
 
-        # Calculate base relevance match
+        # Calculate base relevance match (how well the description matches the query)
         relevance = _cosine_similarity(user_vector, loc_vector)
 
-        # Apply crowd penalty
+        # Apply crowd penalty to prioritize less crowded spots
         crowd_level = int(loc.get('crowd_level', 1))
         final_score = apply_crowd_penalty(relevance, crowd_level)
 
-        # Store results temporarily
+        # Store results with both original and adjusted scores
         loc_result = loc.copy()
         loc_result['relevance'] = relevance
         loc_result['final_score'] = final_score
         results.append(loc_result)
 
-    # Sort from best match to worst match based on the penalized score
+    # Sort by the final_score (penalized) to find the best "Hidden Gems"
     results.sort(key=lambda x: x['final_score'], reverse=True)
 
     return results[:top_n]

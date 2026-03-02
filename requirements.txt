@@ -1,6 +1,8 @@
-
 pandas
 python-dotenv
 pydantic
 fastapi
 streamlit
+googlemaps
+populartimes
+sqlalchemy

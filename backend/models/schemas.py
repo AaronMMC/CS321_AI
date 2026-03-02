@@ -1,25 +1,26 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 # ASSIGNED TO: Gav
 
 class UserPreference(BaseModel):
     """
-    TODO: Define the input data structure.
-    Fields needed:
-    - text_query: str (e.g., "I want coffee")
-    - max_crowd_tolerance: int (1-10)
+    Defines what we expect from the user.
     """
-    pass
+    text_query: str = Field(..., description="What the user is looking for (e.g., 'quiet beach with seafood')")
+    max_crowd_tolerance: int = Field(10, ge=1, le=10, description="Crowd tolerance level from 1 (Hates crowds) to 10 (Loves crowds)")
 
 class SpotRecommendation(BaseModel):
     """
-    TODO: Define the output data structure for a single spot.
-    Fields needed:
-    - id: int
-    - name: str
-    - description: str
-    - crowd_level: int
-    - score: float
+    Defines what we return to the user.
     """
-    pass
+    id: int
+    name: str
+    description: str
+    category: str
+    city: str
+    crowd_level: int
+    lat: float
+    lon: float
+    relevance: float = Field(..., description="How well the text matched (0-1)")
+    final_score: float = Field(..., description="Score after crowd penalty applied")

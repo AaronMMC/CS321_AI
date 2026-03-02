@@ -17,8 +17,14 @@ def clean_and_tokenize(text: str) -> list[str]:
     if not isinstance(text, str):
         return []
 
+    # Convert to lowercase
     text = text.lower()
+
+    # Remove punctuation and special characters using regex
     text = re.sub(r'[^a-z0-9\s]', '', text)
+
+    # Split into individual words
     tokens = text.split()
 
+    # Filter out common stopwords
     return [word for word in tokens if word not in STOPWORDS]

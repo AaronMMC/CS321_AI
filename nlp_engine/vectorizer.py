@@ -4,7 +4,6 @@ import os
 from collections import Counter
 from .preprocessor import clean_and_tokenize
 
-
 # ASSIGNED TO: Aaron
 class CustomTFIDF:
     def __init__(self):
@@ -17,15 +16,19 @@ class CustomTFIDF:
         tokenized_docs = [clean_and_tokenize(doc) for doc in documents]
         N = len(tokenized_docs)
 
+        # Calculate Document Frequency (DF)
         df = Counter()
         for tokens in tokenized_docs:
             unique_tokens = set(tokens)
             for token in unique_tokens:
                 df[token] += 1
 
+        # Calculate Inverse Document Frequency (IDF)
+        # Formula: log((1+N)/(1+df)) + 1 to avoid division by zero
         for word, count in df.items():
             self.idf[word] = math.log((1 + N) / (1 + count)) + 1
 
+        # Convert all documents into TF-IDF vectors
         self.doc_vectors = [self._compute_vector(tokens) for tokens in tokenized_docs]
         self.is_fitted = True
 
@@ -38,6 +41,7 @@ class CustomTFIDF:
         vector = {}
         if doc_len == 0: return vector
 
+        # Calculate TF * IDF and prepare for normalization
         norm = 0.0
         for word, count in tf.items():
             if word in self.idf:
@@ -45,6 +49,7 @@ class CustomTFIDF:
                 vector[word] = weight
                 norm += weight ** 2
 
+        # L2 Normalization (ensures cosine similarity is just a dot product)
         norm = math.sqrt(norm)
         if norm > 0:
             for word in vector:
@@ -53,6 +58,7 @@ class CustomTFIDF:
         return vector
 
     def transform(self, text: str) -> dict:
+        """Converts a new user query into the same vector space as the documents."""
         if not self.is_fitted:
             raise ValueError("Model not fitted.")
         tokens = clean_and_tokenize(text)
