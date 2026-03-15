@@ -1,8 +1,36 @@
-pandas
-python-dotenv
-pydantic
-fastapi
-streamlit
-googlemaps
-populartimes
-sqlalchemy
+# Core ML
+torch>=2.1.0
+transformers>=4.40.0
+datasets>=2.20.0
+scikit-learn>=1.3.0
+
+# Data processing
+pandas>=2.1.0
+numpy>=1.24.0
+nltk>=3.8.1
+
+# Web/API
+fastapi>=0.104.0
+uvicorn>=0.24.0
+streamlit>=1.28.0  # For dashboard
+
+# Email handling
+email-validator>=2.1.0
+
+# External APIs
+requests>=2.31.0
+python-whois>=0.8.0
+python-telegram-bot>=20.0
+
+# Alerting
+twilio>=8.0.0  # For SMS
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.4.0
+pyyaml>=6.0
+loguru>=0.7.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
