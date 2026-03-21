@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # FastAPI service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: email-security-api
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+      - ./models_saved:/app/models_saved
+      - ./logs:/app/logs
+    environment:
+      - ENVIRONMENT=development
+      - DATABASE_URL=sqlite:///app/email_security.db
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # Streamlit Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: email-security-dashboard
+    command: streamlit run src/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./:/app
+      - ./models_saved:/app/models_saved
+    environment:
+      - API_URL=http://api:8000
+    env_file:
+      - .env
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # Redis for queue management
+  redis:
+    image: redis:7-alpine
+    container_name: email-security-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # Optional: PostgreSQL for production
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: email-security-db
+  #   environment:
+  #     POSTGRES_USER: emailsecurity
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: email_security
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: unless-stopped
+
+volumes:
+  redis_data:
+  # postgres_data:
