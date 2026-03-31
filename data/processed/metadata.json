@@ -1,0 +1,59 @@
+{
+  "dataset_version": "1.0.0",
+  "created_at": "2024-01-20T00:00:00",
+  "description": "Processed email security dataset for phishing detection",
+  "sources": [
+    {
+      "name": "combined_fraud_detection_dataset",
+      "original_file": "data/raw/combined_fraud_detection_dataset.csv",
+      "samples": 0,
+      "note": "Run scripts/download_datasets.py --all to populate"
+    },
+    {
+      "name": "enron_spam",
+      "original_file": "data/raw/enron_spam_data.csv",
+      "samples": 0,
+      "note": "Run scripts/download_datasets.py --all to populate"
+    },
+    {
+      "name": "phishing_emails",
+      "original_file": "data/raw/phishing_emails.csv",
+      "samples": 0,
+      "note": "Run scripts/download_datasets.py --all to populate"
+    },
+    {
+      "name": "synthetic_fallback",
+      "original_file": "data/processed/synthetic_training_data.csv",
+      "samples": 800,
+      "note": "Auto-generated when real datasets are unavailable"
+    }
+  ],
+  "splits": {
+    "train": {
+      "file": "data/processed/train.csv",
+      "ratio": 0.70
+    },
+    "validation": {
+      "file": "data/processed/validation.csv",
+      "ratio": 0.10
+    },
+    "test": {
+      "file": "data/processed/test.csv",
+      "ratio": 0.20
+    }
+  },
+  "label_map": {
+    "0": "legitimate",
+    "1": "phishing"
+  },
+  "columns": {
+    "text": "Combined subject + body text used for model input",
+    "label": "Binary label: 0 = legitimate, 1 = phishing"
+  },
+  "preprocessing": {
+    "lowercase": true,
+    "mask_urls": true,
+    "mask_emails": true,
+    "max_words": 400
+  }
+}

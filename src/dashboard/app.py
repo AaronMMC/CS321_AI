@@ -253,7 +253,7 @@ def main_dashboard():
     elif page == "⚙️ Settings":
         render_settings_page()
     elif page == "👤 Admin":
-        admin.render_admin_panel()
+        admin.AdminPanel.render_admin_panel()
 
 
 def render_overview_dashboard():

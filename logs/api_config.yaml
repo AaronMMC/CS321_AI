@@ -1,0 +1,44 @@
+# API Server Configuration
+# Edit values here or override via environment variables.
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  reload: true                  # set false in production
+  workers: 1                    # increase for production (requires gunicorn)
+  log_level: "info"
+
+cors:
+  allow_origins:
+    - "*"                       # restrict in production, e.g. ["https://yourdomain.gov.ph"]
+  allow_methods:
+    - "GET"
+    - "POST"
+    - "DELETE"
+  allow_headers:
+    - "*"
+
+rate_limiting:
+  enabled: false                # set true in production
+  requests_per_minute: 60
+
+security:
+  api_key_required: false       # set true in production; set env API_KEY=<secret>
+
+endpoints:
+  check_email:
+    timeout_seconds: 15
+    max_body_length: 100000     # characters
+
+  check_batch:
+    max_emails_per_request: 100
+    timeout_seconds: 60
+
+  alerts:
+    default_limit: 50
+    max_limit: 500
+
+database:
+  url: "sqlite:///email_security.db"   # override with DATABASE_URL env var
+  pool_size: 5
+  echo: false
