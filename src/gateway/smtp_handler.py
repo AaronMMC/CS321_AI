@@ -17,6 +17,8 @@ from pathlib import Path
 from src.gateway.email_parser import EmailParser
 from src.models.tinybert_model import TinyBERTForEmailSecurity
 from src.features.external_intelligence import ThreatIntelligenceHub
+from src.features.warning_injection import EmailWarningInjector
+from src.features.click_time_protection import ClickTimeProtection, rewrite_email_urls
 from src.utils.config import settings
 
 
@@ -32,8 +34,20 @@ class EmailSecurityHandler(Message):
         self.threat_hub = threat_hub
         self.alert_system = alert_system
         self.parser = EmailParser()
+        self.warning_injector = EmailWarningInjector()
+        self.click_time_protector = ClickTimeProtection(threat_hub)
         self.processed_count = 0
         self.threat_count = 0
+
+    def handle_message(self, message):
+        """
+        Handle incoming email message (synchronous version).
+        This method is called by aiosmtpd for each email.
+        We'll delegate to our async handler.
+        """
+        # This is a synchronous wrapper - we'll call handle_DATA which is async
+        # In a real implementation, we might need to handle this differently
+        pass
 
     async def handle_DATA(self, server, session, envelope):
         """
@@ -49,7 +63,24 @@ class EmailSecurityHandler(Message):
 
         try:
             # Parse the email
-            email_data = self.parser.parse_raw_email(data)
+            # Ensure data is bytes (should be from aiosmtpd)
+            if data is None:
+                # If no content, create minimal email data
+                email_data = {
+                    'headers': {},
+                    'body_plain': '',
+                    'body_html': '',
+                    'subject': '',
+                    'urls': []
+                }
+            elif isinstance(data, str):
+                email_data = self.parser.parse_raw_email(data.encode('utf-8'))
+            elif isinstance(data, bytes):
+                email_data = self.parser.parse_raw_email(data)
+            else:
+                # Fallback: convert to bytes
+                email_data = self.parser.parse_raw_email(str(data).encode('utf-8'))
+            
             email_data['from'] = mail_from
             email_data['to'] = rcpt_tos
 
@@ -68,6 +99,12 @@ class EmailSecurityHandler(Message):
                 # Deliver normally but maybe add warning
                 if action['warn']:
                     await self._add_warning_to_email(email_data)
+
+                # Apply click-time protection to all delivered emails
+                # This rewrites URLs to go through security proxy for real-time checking
+                protected_email = rewrite_email_urls(email_data, self.threat_hub)
+                # Update email_data with protected version
+                email_data.update(protected_email)
 
                 # Forward to actual mail server
                 await self._forward_email(envelope)
@@ -173,10 +210,17 @@ class EmailSecurityHandler(Message):
 
     async def _add_warning_to_email(self, email_data: Dict):
         """
-        Add warning header to suspicious emails.
+        Add warning header to suspicious emails using the warning injection module.
         """
-        # In a real implementation, you'd modify the email headers
-        logger.info(f"Added warning to suspicious email from {email_data.get('from')}")
+        # Determine threat level from email data or use a default
+        threat_score = email_data.get('threat_score', 0.5)  # Default to medium threat if not set
+        threat_level = self.warning_injector.determine_warning_level(threat_score)
+        # Use the warning injection module to add warnings
+        warned_email = self.warning_injector.inject_warning(email_data, threat_level)
+        # Update the email_data with the warned version
+        email_data.update(warned_email)
+        logger.info(f"Added warning to suspicious email from {email_data.get('from')} - "
+                   f"Level: {warned_email.get('warning_info', {}).get('warning_level', 'UNKNOWN')}")
 
     async def _forward_email(self, envelope):
         """

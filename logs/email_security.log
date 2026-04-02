@@ -1,0 +1,27 @@
+2026-04-02 09:55:33 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 09:56:03 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 09:56:45 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 09:57:34 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 09:57:54 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 10:01:16 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 10:02:40 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 10:20:29 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 10:22:38 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 10:23:43 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:10:04 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:12:35 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:12:36 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:14:01 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:14:02 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:32:56 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:33:46 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:33:48 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:33:48 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:47:39 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:47:40 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:47:40 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:49:57 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:49:58 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:49:58 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-02 20:50:18 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-02 20:59:47 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
