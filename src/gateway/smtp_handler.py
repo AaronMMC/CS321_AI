@@ -5,6 +5,7 @@ Acts as a proxy between mail server and employees' inboxes.
 
 import asyncio
 import smtplib
+import time
 from email.message import EmailMessage
 from typing import Optional, Callable, Awaitable, Dict
 from aiosmtpd.controller import Controller
@@ -19,6 +20,12 @@ from src.models.tinybert_model import TinyBERTForEmailSecurity
 from src.features.external_intelligence import ThreatIntelligenceHub
 from src.features.warning_injection import EmailWarningInjector
 from src.features.click_time_protection import ClickTimeProtection, rewrite_email_urls
+from src.features.authentication_verification import verify_email_authentication
+from src.features.performance_metrics import (
+    record_email_processed, record_threat_detected, record_warning_added,
+    record_url_rewritten, record_email_quarantined, record_authentication_failure,
+    record_email_activity
+)
 from src.utils.config import settings
 
 
@@ -36,8 +43,10 @@ class EmailSecurityHandler(Message):
         self.parser = EmailParser()
         self.warning_injector = EmailWarningInjector()
         self.click_time_protector = ClickTimeProtection(threat_hub)
+        self.auth_verifier = None  # Will be initialized when needed
         self.processed_count = 0
         self.threat_count = 0
+        # Performance metrics will be accessed via global functions
 
     def handle_message(self, message):
         """
@@ -64,6 +73,7 @@ class EmailSecurityHandler(Message):
         try:
             # Parse the email
             # Ensure data is bytes (should be from aiosmtpd)
+            start_time = time.time()
             if data is None:
                 # If no content, create minimal email data
                 email_data = {
@@ -83,26 +93,80 @@ class EmailSecurityHandler(Message):
             
             email_data['from'] = mail_from
             email_data['to'] = rcpt_tos
+            
+            # Record email processing started
+            parse_time = time.time() - start_time
 
+            # Perform email authentication verification (SPF/DKIM/DMARC)
+            auth_result = None
+            try:
+                # Perform authentication verification
+                auth_result = verify_email_authentication(email_data)
+                logger.info(f"Email authentication: {auth_result.get('passed', False)} (score: {auth_result.get('score', 0.0):.2f})")
+                
+                # Record authentication failure if applicable
+                if not auth_result.get('passed', False):
+                    record_authentication_failure()
+            except Exception as e:
+                logger.warning(f"Authentication verification failed: {e}")
+                auth_result = {'passed': False, 'score': 0.0, 'error': str(e)}
+                record_authentication_failure()  # Count exceptions as failures too
+            
             # Analyze with AI model
+            analysis_start = time.time()
             threat_score, alert = await self._analyze_email(email_data)
+            analysis_time = time.time() - analysis_start
+            
+            # Record threat detection
+            record_threat_detected(threat_score, analysis_time)
+            
+            # If authentication failed completely, boost threat score
+            if auth_result and not auth_result.get('passed', False) and auth_result.get('score', 0.0) < 0.3:
+                # Boost threat score for failed authentication
+                threat_score = min(1.0, threat_score + 0.3)
+                if alert:
+                    if 'authentication_failed' not in alert:
+                        alert['authentication_failed'] = True
+                    if 'auth_reasons' not in alert:
+                        alert['auth_reasons'] = auth_result.get('reasons', [])
 
             # Process based on threat level
             action = self._determine_action(threat_score)
 
             if action['quarantine']:
                 # Quarantine the email
+                quarantine_start = time.time()
                 await self._quarantine_email(email_data, threat_score, alert)
+                quarantine_time = time.time() - quarantine_start
+                record_email_quarantined()
+                
+                # Record processing time for quarantined email
+                total_time = time.time() - start_time
+                record_email_processed(total_time)
+                record_email_activity(email_data)
+                
                 # Return 250 but don't deliver
                 return '250 Message quarantined for security review'
             else:
                 # Deliver normally but maybe add warning
                 if action['warn']:
+                    warning_start = time.time()
                     await self._add_warning_to_email(email_data)
+                    warning_time = time.time() - warning_start
+                    record_warning_added(warning_time)
 
                 # Apply click-time protection to all delivered emails
                 # This rewrites URLs to go through security proxy for real-time checking
+                url_start = time.time()
                 protected_email = rewrite_email_urls(email_data, self.threat_hub)
+                url_time = time.time() - url_start
+                # Count URLs rewritten for metrics
+                url_count = 0
+                if protected_email.get('url_mappings'):
+                    url_count = len(protected_email['url_mappings'].get('subject', [])) + \
+                             len(protected_email['url_mappings'].get('body_plain', [])) + \
+                             len(protected_email['url_mappings'].get('body_html', []))
+                record_url_rewritten(url_count, url_time)
                 # Update email_data with protected version
                 email_data.update(protected_email)
 
@@ -112,6 +176,13 @@ class EmailSecurityHandler(Message):
                 # Send alert if needed
                 if alert and self.alert_system:
                     await self.alert_system.send_alert(alert)
+
+                # Record final email processing time
+                total_time = time.time() - start_time
+                record_email_processed(total_time)
+                
+                # Record email activity for dashboard
+                record_email_activity(email_data)
 
                 self.processed_count += 1
                 return '250 Message accepted for delivery'
