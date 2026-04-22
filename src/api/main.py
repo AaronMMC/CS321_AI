@@ -3,7 +3,9 @@ Main FastAPI application for the Email Security Gateway.
 Provides REST API endpoints for dashboard and external integration.
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
+import os
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, EmailStr, Field
@@ -12,6 +14,10 @@ from datetime import datetime
 import uvicorn
 from loguru import logger
 import asyncio
+import time
+
+# Load environment variables
+load_dotenv()
 
 from src.models.tinybert_model import TinyBERTForEmailSecurity
 from src.features.external_intelligence import ThreatIntelligenceHub
@@ -26,14 +32,64 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Add CORS middleware
+# ============================================
+# SECURITY: Configure CORS from environment
+# ============================================
+def get_cors_origins():
+    """Get CORS allowed origins from environment variable"""
+    cors_config = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:8501,http://localhost:8000")
+    origins = [o.strip() for o in cors_config.split(",") if o.strip()]
+    return origins
+
+cors_origins = get_cors_origins()
+logger.info(f"Configuring CORS for origins: {cors_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ============================================
+# SECURITY: Simple rate limiting for API endpoints
+# ============================================
+from collections import defaultdict
+from datetime import datetime, timedelta
+
+_rate_limit_storage = defaultdict(list)
+
+def check_rate_limit(request: Request, requests_per_minute: int = 100) -> bool:
+    """
+    Simple rate limiting check.
+    Returns True if request is allowed, raises HTTPException if rate limited.
+    """
+    # Skip if not enabled
+    if os.getenv("RATE_LIMIT_ENABLED", "false").lower() != "true":
+        return True
+
+    # Get client IP
+    client_ip = request.client.host if request.client else "unknown"
+    current_time = datetime.now()
+
+    # Clean old requests (older than 1 minute)
+    _rate_limit_storage[client_ip] = [
+        t for t in _rate_limit_storage[client_ip]
+        if current_time - t < timedelta(minutes=1)
+    ]
+
+    # Check limit
+    if len(_rate_limit_storage[client_ip]) >= requests_per_minute:
+        logger.warning(f"Rate limit exceeded for {client_ip}")
+        raise HTTPException(
+            status_code=429,
+            detail="Rate limit exceeded. Please try again later."
+        )
+
+    # Record this request
+    _rate_limit_storage[client_ip].append(current_time)
+    return True
 
 # Global components
 model = None
@@ -76,20 +132,20 @@ class AlertResponse(BaseModel):
 
 class WhitelistEntry(BaseModel):
     """Whitelist entry for trusted senders"""
-    email: str
-    domain: str
-    reason: str
-    added_by: str
-    timestamp: datetime
+    email: Optional[str] = None
+    domain: Optional[str] = None
+    reason: str = "manually added"
+    added_by: str = "admin"
+    timestamp: Optional[datetime] = None
 
 
 class BlacklistEntry(BaseModel):
     """Blacklist entry for blocked senders"""
-    email: str
-    domain: str
-    reason: str
-    added_by: str
-    timestamp: datetime
+    email: Optional[str] = None
+    domain: Optional[str] = None
+    reason: str = "manually added"
+    added_by: str = "admin"
+    timestamp: Optional[datetime] = None
 
 
 # Startup event
@@ -145,10 +201,18 @@ async def root():
 
 
 @app.post("/api/v1/check-email", response_model=EmailCheckResponse)
-async def check_email(request: EmailCheckRequest, background_tasks: BackgroundTasks):
+async def check_email(request: EmailCheckRequest, http_request: Request, background_tasks: BackgroundTasks):
     """
     Check a single email for phishing threats.
     """
+    # Apply rate limiting
+    rate_limit = int(os.getenv("RATE_LIMIT_PER_MINUTE", "100"))
+    check_rate_limit(http_request, rate_limit)
+
+    # Log the request
+    client_ip = http_request.client.host if http_request.client else "unknown"
+    logger.info(f"Email check request from {client_ip}: subject='{request.subject[:50]}...'")
+
     if not model:
         raise HTTPException(status_code=503, detail="Model not loaded")
 
@@ -208,10 +272,14 @@ async def check_email(request: EmailCheckRequest, background_tasks: BackgroundTa
 
 
 @app.post("/api/v1/check-batch")
-async def check_batch(emails: List[EmailCheckRequest], background_tasks: BackgroundTasks):
+async def check_batch(emails: List[EmailCheckRequest], http_request: Request, background_tasks: BackgroundTasks):
     """
     Check multiple emails in batch.
     """
+    # Apply rate limiting
+    rate_limit = int(os.getenv("RATE_LIMIT_PER_MINUTE", "100"))
+    check_rate_limit(http_request, rate_limit)
+
     if not model:
         raise HTTPException(status_code=503, detail="Model not loaded")
 

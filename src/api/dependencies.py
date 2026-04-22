@@ -2,13 +2,19 @@
 FastAPI dependency injection for shared components.
 """
 
-from fastapi import HTTPException, Header
+import os
+from dotenv import load_dotenv
+from fastapi import HTTPException, Header, Request
+from fastapi.security import APIKeyHeader
 from typing import Optional
 from loguru import logger
 
 from src.models.tinybert_model import TinyBERTForEmailSecurity
 from src.features.external_intelligence import ThreatIntelligenceHub
 from src.gateway.queue_manager import EmailQueue
+
+# Load environment variables
+load_dotenv()
 
 # --- Singleton instances ---
 _model: Optional[TinyBERTForEmailSecurity] = None
@@ -44,14 +50,55 @@ def get_email_queue() -> EmailQueue:
     return _email_queue
 
 
-def verify_api_key(x_api_key: Optional[str] = Header(default=None)):
+def is_production() -> bool:
+    """Check if running in production mode"""
+    return os.getenv("ENVIRONMENT", "development").lower() == "production"
+
+
+def verify_api_key(x_api_key: Optional[str] = Header(default=None, alias="X-API-Key")):
     """
-    Optional API-key guard.
+    API-key guard for external API clients.
+
+    - In DEVELOPMENT mode: API key is optional (all requests allowed)
+    - In PRODUCTION mode: API key is required
 
     Set the environment variable API_KEY to enable key checks.
-    If API_KEY is not set, all requests are allowed (development mode).
     """
-    import os
     expected = os.getenv("API_KEY", "")
-    if expected and x_api_key != expected:
-        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+
+    # In development mode, skip API key check
+    if not is_production():
+        logger.debug("Development mode: API key check skipped")
+        return True
+
+    # In production mode, API key is required
+    if not expected:
+        logger.warning("Production mode: No API_KEY configured in environment!")
+        raise HTTPException(
+            status_code=500,
+            detail="Server configuration error: API_KEY not set"
+        )
+
+    if not x_api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="API key required. Include 'X-API-Key' header."
+        )
+
+    if x_api_key != expected:
+        logger.warning(f"Invalid API key attempt from client")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid API key"
+        )
+
+    logger.debug("API key validated successfully")
+    return True
+
+
+def get_client_ip(request: Request) -> str:
+    """Extract client IP from request, handling proxies"""
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"

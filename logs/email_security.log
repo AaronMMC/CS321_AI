@@ -39,3 +39,246 @@
 2026-04-03 00:13:37 | INFO     | src.features.performance_metrics:__init__:56 - Performance metrics framework initialized
 2026-04-03 00:14:00 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
 2026-04-03 00:35:45 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:27:33 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:27:54 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:27:55 | ERROR    | src.api.main:startup_event:108 - Failed to load model: huawei-noah/TinyBERT_4L_312D is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `hf auth login` or by passing `token=<your_token>`
+2026-04-17 10:27:55 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:29:24 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:29:29 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:29:58 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-17 10:29:58 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-17 10:29:58 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-17 10:29:58 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:29:58 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-17 10:29:58 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-17 10:29:58 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-17 10:29:58 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-17 10:37:01 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:37:06 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:37:09 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-17 10:37:09 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-17 10:37:09 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-17 10:37:09 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:37:09 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-17 10:37:09 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-17 10:37:09 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-17 10:37:09 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-17 10:37:26 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:37:31 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:37:34 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-17 10:37:34 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-17 10:37:34 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-17 10:37:34 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:37:34 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-17 10:37:34 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-17 10:37:34 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-17 10:37:34 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-17 10:37:34 | INFO     | src.api.main:shutdown_event:130 - Shutting down API...
+2026-04-17 10:37:34 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-17 10:38:29 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:38:35 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:38:37 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-17 10:38:37 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-17 10:38:37 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-17 10:38:37 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:38:37 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-17 10:38:37 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-17 10:38:37 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-17 10:38:37 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-17 10:47:07 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:47:12 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:47:15 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-17 10:47:15 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-17 10:47:15 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-17 10:47:15 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:47:15 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-17 10:47:15 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-17 10:47:15 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-17 10:47:15 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-17 10:47:15 | INFO     | src.api.main:shutdown_event:130 - Shutting down API...
+2026-04-17 10:47:15 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-17 10:47:43 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:47:47 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:47:48 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:47:50 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-17 10:47:50 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-17 10:47:50 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-17 10:47:50 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:47:50 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-17 10:47:50 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-17 10:47:50 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-17 10:47:50 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-17 10:47:50 | INFO     | src.api.main:shutdown_event:130 - Shutting down API...
+2026-04-17 10:47:50 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-17 10:51:09 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:51:14 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-17 10:51:17 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-17 10:51:17 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-17 10:51:17 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-17 10:51:17 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-17 10:51:17 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-17 10:51:17 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-17 10:51:17 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-17 10:51:17 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-17 10:52:04 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-17 10:57:11 | INFO     | src.gateway.queue_manager:_worker:153 - Worker 0 processing job job_1776394631.848088_866083472134554623
+2026-04-17 10:57:12 | INFO     | src.gateway.queue_manager:_worker:153 - Worker 0 processing job job_1776394632.259343_866083472134554623
+2026-04-19 19:21:47 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:22:13 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:22:17 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:25:15 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:25:22 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:22 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:24 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:24 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:27 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:27 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:29 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:29 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:32 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:32 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:32 | INFO     | src.models.tinybert_model:create_mini_dataset_for_quick_training:371 - Created mini dataset with 62 samples
+2026-04-19 19:25:34 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:34 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:34 | INFO     | src.models.tinybert_model:train_quick:186 - Starting quick training for 1 epochs
+2026-04-19 19:25:35 | INFO     | src.models.tinybert_model:train_quick:268 - Epoch 1/1 - Loss: 0.6669
+2026-04-19 19:25:35 | SUCCESS  | src.models.tinybert_model:train_quick:270 - Training complete!
+2026-04-19 19:25:35 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:25:36 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:25:36 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:25:36 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-19 19:25:36 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:25:37 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:25:39 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-19 19:25:39 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-19 19:25:39 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:25:42 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:42 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:44 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:25:44 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:25:57 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:26:14 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:26:18 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:28:05 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:28:10 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:28:39 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:28:43 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:28:43 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-19 19:28:43 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-19 19:28:43 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-19 19:28:43 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-19 19:30:07 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:30:11 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:30:14 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:30:14 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:30:14 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-19 19:30:14 | ERROR    | src.api.main:check_email:270 - Error checking email: 'NoneType' object has no attribute 'enqueue'
+2026-04-19 19:30:14 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-19 19:30:14 | ERROR    | src.api.main:check_email:270 - Error checking email: 'NoneType' object has no attribute 'enqueue'
+2026-04-19 19:30:14 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-19 19:30:14 | ERROR    | src.api.main:check_email:270 - Error checking email: 'NoneType' object has no attribute 'enqueue'
+2026-04-19 19:30:14 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-19 19:30:14 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-19 19:30:14 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-19 19:30:48 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:30:52 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:30:55 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:30:55 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:30:55 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:30:55 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-19 19:30:55 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-19 19:30:56 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:30:57 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-19 19:30:57 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-19 19:30:57 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-19 19:30:57 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-19 19:30:57 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-19 19:30:57 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-19 19:31:05 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:31:09 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:31:12 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:12 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:12 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:31:12 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-19 19:31:12 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-19 19:31:13 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:31:14 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-19 19:31:15 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-19 19:31:15 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-19 19:31:15 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-19 19:31:15 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-19 19:31:15 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-19 19:31:17 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:17 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:20 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:20 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:22 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:22 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:25 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:25 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:27 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:27 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:27 | INFO     | src.models.tinybert_model:create_mini_dataset_for_quick_training:371 - Created mini dataset with 62 samples
+2026-04-19 19:31:30 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:30 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:30 | INFO     | src.models.tinybert_model:train_quick:186 - Starting quick training for 1 epochs
+2026-04-19 19:31:30 | INFO     | src.models.tinybert_model:train_quick:268 - Epoch 1/1 - Loss: 0.7398
+2026-04-19 19:31:30 | SUCCESS  | src.models.tinybert_model:train_quick:270 - Training complete!
+2026-04-19 19:31:30 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:31:31 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:31:31 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:31:32 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-19 19:31:32 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:31:33 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:31:34 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-19 19:31:34 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-19 19:31:34 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:31:37 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:37 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:31:40 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:31:40 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:22 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:51:30 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-19 19:51:35 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-19 19:51:38 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:51:38 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:38 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:51:38 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-19 19:51:38 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-19 19:51:39 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:51:40 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-19 19:51:40 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-19 19:51:40 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-19 19:51:40 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-19 19:51:40 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-19 19:51:40 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-19 19:51:43 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:51:43 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:45 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:51:45 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:48 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:51:48 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:50 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:51:50 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:53 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:51:53 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:53 | INFO     | src.models.tinybert_model:create_mini_dataset_for_quick_training:371 - Created mini dataset with 62 samples
+2026-04-19 19:51:55 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:51:55 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:51:55 | INFO     | src.models.tinybert_model:train_quick:186 - Starting quick training for 1 epochs
+2026-04-19 19:51:56 | INFO     | src.models.tinybert_model:train_quick:268 - Epoch 1/1 - Loss: 0.7353
+2026-04-19 19:51:56 | SUCCESS  | src.models.tinybert_model:train_quick:270 - Training complete!
+2026-04-19 19:51:56 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:51:57 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:51:57 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:51:57 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-19 19:51:57 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:51:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-19 19:51:59 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-19 19:51:59 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-19 19:51:59 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-19 19:52:02 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:52:02 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-19 19:52:04 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
+2026-04-19 19:52:04 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074

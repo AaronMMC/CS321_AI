@@ -1,0 +1,87 @@
+# =====================================================
+# Environment & Secrets
+# =====================================================
+
+# Environment variables (NEVER commit this!)
+.env
+.env.local
+.env.*.local
+
+# API Keys and secrets
+*.key
+secrets/
+credentials.json
+
+# =====================================================
+# Python
+# =====================================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# =====================================================
+# Models & Data
+# =====================================================
+
+models_saved/
+*.pth
+*.pt
+*.h5
+*.pkl
+*.joblib
+
+# Data directories (may contain sensitive data)
+data/raw/
+data/processed/
+data/exterrnal/
+cache/
+quarantine/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# =====================================================
+# Logs
+# =====================================================
+
+logs/
+*.log
+log.txt
+
+# =====================================================
+# IDE
+# =====================================================
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# =====================================================
+# OS
+# =====================================================
+
+.DS_Store
+Thumbs.db
+
+# =====================================================
+# Docker
+# =====================================================
+
+.docker/
+docker-compose.override.yml
