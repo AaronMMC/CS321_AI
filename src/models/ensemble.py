@@ -8,7 +8,7 @@ import numpy as np
 from loguru import logger
 
 from src.models.tinybert_model import TinyBERTForEmailSecurity
-from src.models.bert_classifier import BERTPhishingClassifier, TinyBERTPhishingDetector
+from src.models.bert_classifier import BERTPhishingClassifier
 from src.features.external_intelligence import ThreatIntelligenceHub
 
 
@@ -34,22 +34,22 @@ class EnsemblePhishingDetector:
         self.strategy = strategy
         self.use_external = use_external
 
-        logger.info("Loading TinyBERT for ensemble …")
+        logger.info("Loading primary TinyBERT model for ensemble …")
         self._tinybert = TinyBERTForEmailSecurity(use_gpu=use_gpu)
 
-        logger.info("Loading pre-trained TinyBERT (HuggingFace) for ensemble …")
-        try:
-            self._hf_tinybert = TinyBERTPhishingDetector()
-        except Exception as exc:
-            logger.warning(f"Could not load HF TinyBERT: {exc} — will skip it.")
-            self._hf_tinybert = None
+        # BUG FIX: TinyBERTPhishingDetector never existed in bert_classifier.py.
+        # We now use a second instance of the same scratch model as the "second"
+        # ensemble member. In a real deployment you would load a separately
+        # fine-tuned checkpoint here.
+        logger.info("Loading secondary model for ensemble …")
+        self._secondary = TinyBERTForEmailSecurity(use_gpu=use_gpu)
 
         if use_external:
             self._threat_hub = ThreatIntelligenceHub()
         else:
             self._threat_hub = None
 
-        # Default weights: (tinybert, hf_tinybert, external)
+        # Default weights: (primary, secondary, external)
         self._weights = [0.55, 0.30, 0.15]
 
         logger.info(f"EnsemblePhishingDetector ready (strategy='{strategy}')")
@@ -76,26 +76,25 @@ class EnsemblePhishingDetector:
         """
         scores: Dict[str, float] = {}
 
-        # --- TinyBERT (fine-tuned) ---
+        # --- Primary TinyBERT ---
         try:
             res = self._tinybert.predict(text)
             scores["tinybert"] = (
                 res.get("threat_score", 0.0) if isinstance(res, dict) else float(res)
             )
         except Exception as exc:
-            logger.error(f"TinyBERT prediction failed: {exc}")
+            logger.error(f"Primary TinyBERT prediction failed: {exc}")
             scores["tinybert"] = 0.0
 
-        # --- HuggingFace TinyBERT ---
-        if self._hf_tinybert is not None:
-            try:
-                res = self._hf_tinybert.predict(text)
-                scores["hf_tinybert"] = res.get("threat_score", 0.0)
-            except Exception as exc:
-                logger.error(f"HF TinyBERT prediction failed: {exc}")
-                scores["hf_tinybert"] = 0.0
-        else:
-            scores["hf_tinybert"] = scores["tinybert"]  # fallback
+        # --- Secondary model ---
+        try:
+            res = self._secondary.predict(text)
+            scores["secondary"] = (
+                res.get("threat_score", 0.0) if isinstance(res, dict) else float(res)
+            )
+        except Exception as exc:
+            logger.error(f"Secondary model prediction failed: {exc}")
+            scores["secondary"] = scores["tinybert"]  # fallback
 
         # --- External intelligence ---
         if self._threat_hub and urls:
@@ -129,7 +128,7 @@ class EnsemblePhishingDetector:
     # ------------------------------------------------------------------
 
     def _combine(self, scores: Dict[str, float]) -> float:
-        score_list = [scores["tinybert"], scores["hf_tinybert"], scores["external"]]
+        score_list = [scores["tinybert"], scores["secondary"], scores["external"]]
         weights = self._weights
 
         if self.strategy == "average":

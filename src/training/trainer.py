@@ -1,3 +1,13 @@
+"""
+trainer.py — Full training loop for scratch Transformer models.
+
+BUG FIX: Replaced `get_linear_schedule_with_warmup` from the `transformers`
+package with `OneCycleLR` from pure PyTorch (`torch.optim.lr_scheduler`).
+The transformers import was fragile (the package is listed in requirements
+only for its scheduler utility) and unnecessary since PyTorch ships an
+equivalent scheduler natively.
+"""
+
 import json
 from datetime import datetime
 from pathlib import Path
@@ -6,8 +16,8 @@ from typing import Dict, List, Optional, Tuple
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
+from torch.optim.lr_scheduler import OneCycleLR          # pure PyTorch – no transformers needed
 from torch.utils.data import DataLoader
-from transformers import get_linear_schedule_with_warmup
 from loguru import logger
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
@@ -45,23 +55,29 @@ class ModelTrainer:
 
     def train(
         self,
-        train_dataloader:           DataLoader,
-        val_dataloader:             Optional[DataLoader] = None,
-        epochs:                     int   = 5,
-        learning_rate:              float = 3e-4,
-        warmup_steps:               int   = 0,
-        gradient_accumulation_steps: int  = 1,
-        max_grad_norm:              float = 1.0,
-        save_best_model:            bool  = True,
-        early_stopping_patience:    Optional[int] = 3,
+        train_dataloader:            DataLoader,
+        val_dataloader:              Optional[DataLoader] = None,
+        epochs:                      int   = 5,
+        learning_rate:               float = 3e-4,
+        warmup_ratio:                float = 0.1,          # fraction of total steps for warmup
+        gradient_accumulation_steps: int   = 1,
+        max_grad_norm:               float = 1.0,
+        save_best_model:             bool  = True,
+        early_stopping_patience:     Optional[int] = 3,
     ) -> Dict:
 
-        optimizer    = AdamW(self.model.parameters(), lr=learning_rate, weight_decay=1e-2)
         total_steps  = len(train_dataloader) * epochs
-        scheduler    = get_linear_schedule_with_warmup(
+        optimizer    = AdamW(self.model.parameters(), lr=learning_rate, weight_decay=1e-2)
+
+        # BUG FIX: was `get_linear_schedule_with_warmup` from transformers.
+        # OneCycleLR from PyTorch provides warm-up + cosine annealing with zero
+        # external dependencies.
+        scheduler = OneCycleLR(
             optimizer,
-            num_warmup_steps=warmup_steps or int(0.1 * total_steps),
-            num_training_steps=total_steps,
+            max_lr=learning_rate,
+            total_steps=total_steps,
+            pct_start=warmup_ratio,      # fraction used for warm-up phase
+            anneal_strategy="cos",
         )
 
         history = {
@@ -69,7 +85,7 @@ class ModelTrainer:
             "val_accuracy": [], "val_f1": [], "epochs": [],
         }
 
-        best_val_f1     = 0.0
+        best_val_f1      = 0.0
         patience_counter = 0
 
         logger.info(f"Training for {epochs} epochs — all weights random, training from scratch")
@@ -138,14 +154,14 @@ class ModelTrainer:
 
     def evaluate(self, dataloader: DataLoader) -> Dict:
         self.model.eval()
-        total_loss    = 0.0
-        all_preds     = []
-        all_labels    = []
+        total_loss = 0.0
+        all_preds  = []
+        all_labels = []
 
         with torch.no_grad():
             for batch in dataloader:
-                batch   = {k: v.to(self.device) for k, v in batch.items()}
-                out     = self.model(**batch)
+                batch = {k: v.to(self.device) for k, v in batch.items()}
+                out   = self.model(**batch)
                 if "loss" in out:
                     total_loss += out["loss"].item()
                 preds = out["logits"].argmax(dim=-1).cpu().numpy()
@@ -153,7 +169,7 @@ class ModelTrainer:
                 all_labels.extend(batch["labels"].cpu().numpy())
 
         return {
-            "loss":             total_loss / len(dataloader),
+            "loss":             total_loss / max(len(dataloader), 1),
             "accuracy":         accuracy_score(all_labels, all_preds),
             "precision":        precision_score(all_labels, all_preds, average="binary", zero_division=0),
             "recall":           recall_score(all_labels, all_preds, average="binary", zero_division=0),
@@ -174,7 +190,7 @@ class ModelTrainer:
             "saved_at":   datetime.now().isoformat(),
             "model_type": type(self.model).__name__,
             "device":     str(self.device),
-            "pretrained": False,    # explicit flag — trained from scratch
+            "pretrained": False,
         }
         with open(save_path / "metadata.json", "w") as f:
             json.dump(meta, f, indent=2)
@@ -204,7 +220,6 @@ class QuickTrainer:
             texts, labels, test_size=val_split, random_state=42, stratify=labels
         )
 
-        # Build vocab from training data only
         self.model.build_tokenizer(train_texts)
 
         return self.model.train_quick(
@@ -224,7 +239,7 @@ class QuickTrainer:
                 "confidence":   pred["confidence"],
             })
             indicator = (
-                "PHISHING" if pred["threat_score"] > 0.7 else
+                "PHISHING"  if pred["threat_score"] > 0.7 else
                 "SUSPICIOUS" if pred["threat_score"] > 0.4 else
                 "LEGIT"
             )
