@@ -39,3 +39,29 @@
 2026-04-03 00:13:37 | INFO     | src.features.performance_metrics:__init__:56 - Performance metrics framework initialized
 2026-04-03 00:14:00 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
 2026-04-03 00:35:45 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-23 14:50:57 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-23 14:50:57 | INFO     | src.models.scratch_transformer:create_mini_dataset_for_quick_training:656 - Mini dataset: 74 samples (37 legit, 37 phishing)
+2026-04-23 14:50:57 | INFO     | src.models.scratch_transformer:build_vocab:85 - Vocabulary built: 155 tokens (min_freq=2, max_vocab=30000)
+2026-04-23 14:50:57 | INFO     | src.models.scratch_transformer:__init__:268 - ScratchTransformerClassifier initialised (vocab=155, embed=128, layers=2, heads=4) — 425,026 parameters — ALL WEIGHTS RANDOM
+2026-04-23 14:50:59 | INFO     | src.models.scratch_transformer:train_quick:499 - Training from scratch — 59 samples, 5 epochs, device=cpu
+2026-04-23 14:51:00 | INFO     | src.models.scratch_transformer:train_quick:531 - Epoch 1/5  loss=1.0508  val_acc=0.4667  val_f1=0.6364
+2026-04-23 14:51:01 | INFO     | src.models.scratch_transformer:train_quick:531 - Epoch 2/5  loss=0.7140  val_acc=0.8000  val_f1=0.7273
+2026-04-23 14:51:01 | INFO     | src.models.scratch_transformer:train_quick:531 - Epoch 3/5  loss=0.5618  val_acc=0.7333  val_f1=0.7778
+2026-04-23 14:51:02 | INFO     | src.models.scratch_transformer:train_quick:531 - Epoch 4/5  loss=0.5720  val_acc=0.6667  val_f1=0.7368
+2026-04-23 14:51:03 | INFO     | src.models.scratch_transformer:train_quick:531 - Epoch 5/5  loss=0.4677  val_acc=0.6667  val_f1=0.7368
+2026-04-23 14:51:03 | SUCCESS  | src.models.scratch_transformer:train_quick:538 - Training complete.
+2026-04-23 14:51:03 | INFO     | src.models.scratch_transformer:save:137 - Tokenizer saved → models_saved\tinybert_enron_spam\tokenizer.json
+2026-04-23 14:51:03 | INFO     | src.models.scratch_transformer:save:580 - Model saved → models_saved\tinybert_enron_spam
+2026-04-23 14:51:04 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-23 14:51:05 | INFO     | src.api.main:startup_event:101 - Starting Email Security Gateway API...
+2026-04-23 14:51:05 | INFO     | src.api.main:startup_event:106 - Model loaded successfully
+2026-04-23 14:51:05 | WARNING  | src.features.external_intelligence:__init__:29 - VirusTotal API key not configured - will use mock data
+2026-04-23 14:51:05 | WARNING  | src.features.external_intelligence:__init__:140 - Google Safe Browsing API key not configured
+2026-04-23 14:51:05 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-23 14:51:05 | INFO     | src.api.main:startup_event:121 - Processor started
+2026-04-23 14:51:05 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-23 14:51:05 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-23 14:51:05 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-23 14:51:17 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-23 14:51:45 | INFO     | src.api.main:shutdown_event:130 - Shutting down API...
+2026-04-23 14:51:45 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped

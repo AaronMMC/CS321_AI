@@ -1,314 +1,240 @@
 """
-BERT-based classifier for phishing email detection.
-This is the main model that combines NLP with external intelligence.
-"""
-from pathlib import Path
+bert_classifier.py  —  UPDATED
 
+Previously used AutoModel / AutoTokenizer from HuggingFace, which loaded
+pre-trained BERT weights. This version builds the same BERT-style encoder
+architecture from scratch using only torch.nn — zero pre-trained weights.
+
+The ScratchBERTClassifier here is the "full-size" counterpart to the
+lightweight ScratchTransformerClassifier in scratch_transformer.py.
+Use this when you want a larger, more accurate model and have the compute.
+"""
+
+import math
 import torch
 import torch.nn as nn
-from transformers import AutoModel, AutoTokenizer, AutoConfig
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, List, Optional
 from dataclasses import dataclass
 from loguru import logger
 import numpy as np
 
+from src.models.scratch_transformer import (
+    SimpleTokenizer,
+    PositionalEncoding,
+    ScratchModelForEmailSecurity,
+)
+
 
 @dataclass
 class ModelOutput:
-    """Structured output from the model"""
-    threat_score: float
-    risk_level: str
-    confidence: float
-    explanations: List[str]
+    """Structured output from the model — interface unchanged."""
+    threat_score:  float
+    risk_level:    str
+    confidence:    float
+    explanations:  List[str]
     features_used: Dict[str, float]
 
 
-class BERTPhishingClassifier(nn.Module):
+class ScratchBERTClassifier(nn.Module):
     """
-    BERT-based model with custom classification head for phishing detection.
-    Combines text analysis with external feature scores.
+    Full-sized scratch Transformer classifier.
+    Larger than ScratchTransformerClassifier but still fully randomly
+    initialised — no pre-trained weights whatsoever.
+
+    Default config mirrors BERT-base dimensions scaled to be trainable
+    in a reasonable time on a single mid-range GPU:
+        embed_dim  = 512   (BERT-base uses 768)
+        num_heads  = 8
+        num_layers = 6     (BERT-base uses 12)
+        ffn_dim    = 2048  (BERT-base uses 3072)
     """
 
     def __init__(
-            self,
-            model_name: str = "bert-base-uncased",
-            num_labels: int = 2,
-            dropout: float = 0.3,
-            use_external_features: bool = True
+        self,
+        vocab_size:          int   = 30_000,
+        embed_dim:           int   = 512,
+        num_heads:           int   = 8,
+        num_layers:          int   = 6,
+        ffn_dim:             int   = 2048,
+        max_length:          int   = 256,
+        num_labels:          int   = 2,
+        dropout:             float = 0.1,
+        use_external_features: bool = True,
+        pad_idx:             int   = 0,
     ):
         super().__init__()
 
-        self.model_name = model_name
-        self.num_labels = num_labels
+        self.embed_dim            = embed_dim
+        self.max_length           = max_length
         self.use_external_features = use_external_features
+        self.num_labels           = num_labels
 
-        # Load BERT configuration
-        self.config = AutoConfig.from_pretrained(
-            model_name,
-            num_labels=num_labels,
-            hidden_dropout_prob=dropout,
-            attention_probs_dropout_prob=dropout
+        # ── Embedding stack ───────────────────────────────────────────────
+        self.embedding    = nn.Embedding(vocab_size, embed_dim, padding_idx=pad_idx)
+        self.pos_encoding = PositionalEncoding(embed_dim, max_len=max_length, dropout=dropout)
+        nn.init.normal_(self.embedding.weight, std=0.02)
+        with torch.no_grad():
+            self.embedding.weight[pad_idx].fill_(0)
+
+        # ── Transformer encoder ───────────────────────────────────────────
+        enc_layer = nn.TransformerEncoderLayer(
+            d_model=embed_dim, nhead=num_heads,
+            dim_feedforward=ffn_dim, dropout=dropout,
+            activation="gelu", batch_first=True, norm_first=True,
+        )
+        self.encoder = nn.TransformerEncoder(
+            enc_layer, num_layers=num_layers, enable_nested_tensor=False
         )
 
-        # Load BERT model
-        self.bert = AutoModel.from_pretrained(model_name, config=self.config)
-
-        # Custom classification head
-        hidden_size = self.config.hidden_size
-
+        # ── External feature fusion (4-dim threat intelligence vector) ────
         if use_external_features:
-            # If using external features, we need to combine them
-            # External features: URL reputation, domain age, etc. (4 features)
-            self.feature_projection = nn.Linear(4, hidden_size // 4)
-            combined_size = hidden_size + (hidden_size // 4)
-
-            self.classifier = nn.Sequential(
-                nn.Linear(combined_size, hidden_size // 2),
-                nn.ReLU(),
-                nn.Dropout(dropout),
-                nn.Linear(hidden_size // 2, hidden_size // 4),
-                nn.ReLU(),
-                nn.Dropout(dropout),
-                nn.Linear(hidden_size // 4, num_labels)
+            self.feature_projection = nn.Sequential(
+                nn.Linear(4, embed_dim // 4),
+                nn.GELU(),
             )
+            clf_input_dim = embed_dim + embed_dim // 4
         else:
-            # Simpler head without external features
-            self.classifier = nn.Sequential(
-                nn.Linear(hidden_size, hidden_size // 2),
-                nn.ReLU(),
-                nn.Dropout(dropout),
-                nn.Linear(hidden_size // 2, hidden_size // 4),
-                nn.ReLU(),
-                nn.Dropout(dropout),
-                nn.Linear(hidden_size // 4, num_labels)
-            )
+            clf_input_dim = embed_dim
 
-        # Loss function
+        # ── Classification head ───────────────────────────────────────────
+        self.classifier = nn.Sequential(
+            nn.LayerNorm(clf_input_dim),
+            nn.Linear(clf_input_dim, clf_input_dim // 2),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(clf_input_dim // 2, clf_input_dim // 4),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(clf_input_dim // 4, num_labels),
+        )
+
         self.loss_fn = nn.CrossEntropyLoss()
+        self._init_weights()
 
-        # Move to GPU if available
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.to(self.device)
+        total = sum(p.numel() for p in self.parameters())
+        logger.info(
+            f"ScratchBERTClassifier ready — {total:,} params — "
+            f"ALL WEIGHTS RANDOMLY INITIALISED"
+        )
 
-        logger.info(f"Initialized BERTPhishingClassifier on {self.device}")
-        logger.info(f"Model: {model_name}")
-        logger.info(f"External features: {use_external_features}")
+    def _init_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.xavier_uniform_(m.weight)
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
+            elif isinstance(m, nn.LayerNorm):
+                nn.init.ones_(m.weight)
+                nn.init.zeros_(m.bias)
 
     def forward(
-            self,
-            input_ids: torch.Tensor,
-            attention_mask: torch.Tensor,
-            external_features: Optional[torch.Tensor] = None,
-            labels: Optional[torch.Tensor] = None
+        self,
+        input_ids:         torch.Tensor,
+        attention_mask:    torch.Tensor,
+        external_features: Optional[torch.Tensor] = None,
+        labels:            Optional[torch.Tensor] = None,
     ) -> Dict[str, torch.Tensor]:
-        """
-        Forward pass through the model.
 
-        Args:
-            input_ids: Tokenized input IDs
-            attention_mask: Attention mask
-            external_features: Optional tensor of external features
-            labels: Optional ground truth labels for training
+        x = self.embedding(input_ids) * math.sqrt(self.embed_dim)
+        x = self.pos_encoding(x)
 
-        Returns:
-            Dictionary containing logits, loss (if labels provided), and probabilities
-        """
-        # Get BERT embeddings
-        outputs = self.bert(
-            input_ids=input_ids,
-            attention_mask=attention_mask
-        )
+        pad_mask = (attention_mask == 0)
+        x = self.encoder(x, src_key_padding_mask=pad_mask)
 
-        # Use [CLS] token representation
-        pooled_output = outputs.last_hidden_state[:, 0, :]  # Shape: (batch_size, hidden_size)
+        # Mean pooling over real tokens
+        mask_f = attention_mask.unsqueeze(-1).float()
+        pooled = (x * mask_f).sum(1) / mask_f.sum(1).clamp(min=1e-9)
 
-        # Combine with external features if available
         if self.use_external_features and external_features is not None:
-            # Project external features
-            projected_features = self.feature_projection(external_features)
+            proj = self.feature_projection(external_features)
+            pooled = torch.cat([pooled, proj], dim=1)
 
-            # Concatenate with BERT output
-            combined = torch.cat([pooled_output, projected_features], dim=1)
-        else:
-            combined = pooled_output
+        logits = self.classifier(pooled)
+        probs  = torch.softmax(logits, dim=-1)
 
-        # Classify
-        logits = self.classifier(combined)
-
-        # Calculate probabilities
-        probabilities = torch.softmax(logits, dim=-1)
-
-        output = {
-            'logits': logits,
-            'probabilities': probabilities,
-        }
-
-        # Calculate loss if labels provided
+        out: Dict[str, torch.Tensor] = {"logits": logits, "probabilities": probs}
         if labels is not None:
-            loss = self.loss_fn(logits, labels)
-            output['loss'] = loss
-
-        return output
+            out["loss"] = self.loss_fn(logits, labels)
+        return out
 
     def predict(
-            self,
-            text: str,
-            tokenizer,
-            external_features: Optional[np.ndarray] = None,
-            threshold: float = 0.5
+        self,
+        text:               str,
+        tokenizer:          SimpleTokenizer,
+        external_features:  Optional[np.ndarray] = None,
+        threshold:          float = 0.5,
     ) -> ModelOutput:
-        """
-        Predict threat score for a single email.
-
-        Args:
-            text: Email content
-            tokenizer: Tokenizer for the model
-            external_features: Optional external intelligence scores
-            threshold: Classification threshold
-
-        Returns:
-            ModelOutput with predictions and explanations
-        """
         self.eval()
+        device = next(self.parameters()).device
 
-        # Tokenize
-        encoding = tokenizer(
-            text,
-            truncation=True,
-            padding='max_length',
-            max_length=512,
-            return_tensors='pt'
-        )
+        ids, mask = tokenizer.encode(text, max_length=self.max_length)
+        input_ids      = torch.tensor([ids],  dtype=torch.long).to(device)
+        attention_mask = torch.tensor([mask], dtype=torch.long).to(device)
 
-        # Move to device
-        input_ids = encoding['input_ids'].to(self.device)
-        attention_mask = encoding['attention_mask'].to(self.device)
-
-        # Process external features
+        ext = None
         if external_features is not None and self.use_external_features:
-            ext_features = torch.tensor(external_features, dtype=torch.float32).unsqueeze(0).to(self.device)
-        else:
-            ext_features = None
+            ext = torch.tensor(external_features, dtype=torch.float32
+                               ).unsqueeze(0).to(device)
 
-        # Forward pass
         with torch.no_grad():
-            outputs = self.forward(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                external_features=ext_features
-            )
+            out = self.forward(input_ids, attention_mask, ext)
 
-        # Get probabilities
-        probs = outputs['probabilities'].cpu().numpy()[0]
-        threat_prob = probs[1]  # Assuming class 1 is phishing
+        probs       = out["probabilities"].cpu().numpy()[0]
+        threat_prob = float(probs[1])
 
-        # Generate explanations
+        if threat_prob >= 0.8:   risk_level = "CRITICAL"
+        elif threat_prob >= 0.6: risk_level = "HIGH"
+        elif threat_prob >= 0.4: risk_level = "MEDIUM"
+        elif threat_prob >= 0.2: risk_level = "LOW"
+        else:                    risk_level = "SAFE"
+
         explanations = self._generate_explanations(text, threat_prob, external_features)
 
-        # Determine risk level
-        if threat_prob >= 0.8:
-            risk_level = "CRITICAL"
-        elif threat_prob >= 0.6:
-            risk_level = "HIGH"
-        elif threat_prob >= 0.4:
-            risk_level = "MEDIUM"
-        elif threat_prob >= 0.2:
-            risk_level = "LOW"
-        else:
-            risk_level = "SAFE"
-
-        # Feature importance (simplified)
         features_used = {
-            'text_analysis': float(threat_prob),
-            'url_reputation': float(external_features[0]) if external_features is not None else 0.0,
-            'domain_age': float(external_features[1]) if external_features is not None else 0.0,
-            'external_db_hits': float(external_features[2]) if external_features is not None else 0.0,
-            'pattern_match': float(external_features[3]) if external_features is not None else 0.0
+            "text_analysis":   threat_prob,
+            "url_reputation":  float(external_features[0]) if external_features is not None else 0.0,
+            "domain_age":      float(external_features[1]) if external_features is not None else 0.0,
+            "external_db_hits":float(external_features[2]) if external_features is not None else 0.0,
+            "pattern_match":   float(external_features[3]) if external_features is not None else 0.0,
         }
 
         return ModelOutput(
-            threat_score=float(threat_prob),
+            threat_score=threat_prob,
             risk_level=risk_level,
             confidence=float(max(probs)),
             explanations=explanations,
-            features_used=features_used
+            features_used=features_used,
         )
 
     def _generate_explanations(
-            self,
-            text: str,
-            threat_prob: float,
-            external_features: Optional[np.ndarray]
+        self,
+        text:              str,
+        threat_prob:       float,
+        external_features: Optional[np.ndarray],
     ) -> List[str]:
-        """Generate human-readable explanations for the prediction"""
         explanations = []
-
-        # Text-based explanations
         if threat_prob > 0.7:
-            urgent_words = ['urgent', 'immediately', 'verify', 'suspended', 'limited']
-            found_words = [word for word in urgent_words if word in text.lower()]
-            if found_words:
-                explanations.append(f"Contains urgency words: {', '.join(found_words)}")
-
-        # External feature explanations
+            urgent_words = ["urgent", "immediately", "verify", "suspended", "limited"]
+            found = [w for w in urgent_words if w in text.lower()]
+            if found:
+                explanations.append(f"Contains urgency words: {', '.join(found)}")
         if external_features is not None:
             if external_features[0] > 0.7:
-                explanations.append("Links have poor reputation (flagged by security vendors)")
-
+                explanations.append("Links flagged by security vendors (URL reputation)")
             if external_features[1] > 0.7:
                 explanations.append("Sender domain is newly registered")
-
             if external_features[2] > 0.7:
                 explanations.append("Domain appears in threat intelligence databases")
-
             if external_features[3] > 0.7:
                 explanations.append("Similar to previously detected phishing campaigns")
-
         if not explanations:
-            if threat_prob > 0.5:
-                explanations.append("Suspicious language patterns detected")
-            else:
-                explanations.append("No obvious phishing indicators found")
-
+            explanations.append(
+                "Suspicious language patterns detected" if threat_prob > 0.5
+                else "No obvious phishing indicators found"
+            )
         return explanations
 
 
-class TinyBERTPhishingDetector:
-    """
-    Lightweight version using pre-trained TinyBERT for faster inference.
-    Good for resource-constrained environments.
-    """
-
-    def __init__(self, model_path: Optional[str] = None):
-        from transformers import pipeline
-
-        if model_path and Path(model_path).exists():
-            # Load fine-tuned model
-            self.classifier = pipeline(
-                "text-classification",
-                model=model_path,
-                truncation=True
-            )
-            logger.info(f"Loaded TinyBERT model from {model_path}")
-        else:
-            # Use pre-trained from HuggingFace
-            self.classifier = pipeline(
-                "text-classification",
-                model="prancyFox/tiny-bert-enron-spam",
-                truncation=True
-            )
-            logger.info("Loaded pre-trained TinyBERT from HuggingFace")
-
-    def predict(self, text: str) -> Dict:
-        """Predict using TinyBERT"""
-        result = self.classifier(text)[0]
-
-        # Convert to our format
-        is_phishing = result['label'].lower() == 'spam' or result['label'].lower() == 'phishing'
-        score = result['score'] if is_phishing else 1 - result['score']
-
-        return {
-            'threat_score': score,
-            'label': result['label'],
-            'confidence': result['score']
-        }
+# ── Backwards-compatible alias ────────────────────────────────────────────────
+# Old code that imported BERTPhishingClassifier still works.
+BERTPhishingClassifier = ScratchBERTClassifier

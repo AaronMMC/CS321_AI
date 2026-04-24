@@ -71,7 +71,7 @@ class AlertResponse(BaseModel):
     to_email: str
     subject: str
     risk_level: str
-    status: str = "new"  # new, acknowledged, resolved
+    status: str = "new"
 
 
 class WhitelistEntry(BaseModel):
@@ -145,9 +145,14 @@ async def root():
 
 
 @app.post("/api/v1/check-email", response_model=EmailCheckResponse)
-async def check_email(request: EmailCheckRequest, background_tasks: BackgroundTasks):
+async def check_email(request: EmailCheckRequest):
     """
     Check a single email for phishing threats.
+
+    BUG FIX: Removed the redundant email_queue.enqueue() call that was
+    processing every request twice (once synchronously for the response,
+    and once via the background async worker). The queue is now only used
+    by the /check-batch endpoint for true background processing.
     """
     if not model:
         raise HTTPException(status_code=503, detail="Model not loaded")
@@ -186,20 +191,12 @@ async def check_email(request: EmailCheckRequest, background_tasks: BackgroundTa
         if "urgent" in request.subject.lower() or "verify" in request.subject.lower():
             explanations.append("Subject contains urgency/verification keywords")
 
-        # Add to background processing queue
-        job_id = email_queue.enqueue({
-            "subject": request.subject,
-            "body": request.body,
-            "from": request.from_email,
-            "to": request.to_email
-        })
-
         return EmailCheckResponse(
             threat_score=combined_score,
             risk_level=_get_risk_level(combined_score),
             explanations=explanations or ["No obvious threats detected"],
             timestamp=datetime.now(),
-            job_id=job_id
+            job_id=None  # No queue job for synchronous check
         )
 
     except Exception as e:
@@ -210,7 +207,7 @@ async def check_email(request: EmailCheckRequest, background_tasks: BackgroundTa
 @app.post("/api/v1/check-batch")
 async def check_batch(emails: List[EmailCheckRequest], background_tasks: BackgroundTasks):
     """
-    Check multiple emails in batch.
+    Check multiple emails in batch (queued for background processing).
     """
     if not model:
         raise HTTPException(status_code=503, detail="Model not loaded")
@@ -234,9 +231,7 @@ async def check_batch(emails: List[EmailCheckRequest], background_tasks: Backgro
 
 @app.get("/api/v1/job-status/{job_id}")
 async def get_job_status(job_id: str):
-    """
-    Get status of a processing job.
-    """
+    """Get status of a processing job."""
     if not email_queue:
         raise HTTPException(status_code=503, detail="Queue not initialized")
 
@@ -249,11 +244,7 @@ async def get_job_status(job_id: str):
 
 @app.get("/api/v1/alerts", response_model=List[AlertResponse])
 async def get_alerts(status: Optional[str] = None, limit: int = 50):
-    """
-    Get recent alerts.
-    """
-    # This would come from database in production
-    # For now, return mock data
+    """Get recent alerts."""
     mock_alerts = [
         {
             "id": "alert_001",
@@ -285,47 +276,31 @@ async def get_alerts(status: Optional[str] = None, limit: int = 50):
 
 @app.post("/api/v1/whitelist")
 async def add_to_whitelist(entry: WhitelistEntry):
-    """
-    Add email/domain to whitelist.
-    """
-    # In production, store in database
     logger.info(f"Added to whitelist: {entry.email or entry.domain}")
     return {"message": "Added to whitelist", "entry": entry}
 
 
 @app.delete("/api/v1/whitelist/{identifier}")
 async def remove_from_whitelist(identifier: str):
-    """
-    Remove email/domain from whitelist.
-    """
     logger.info(f"Removed from whitelist: {identifier}")
     return {"message": f"Removed {identifier} from whitelist"}
 
 
 @app.post("/api/v1/blacklist")
 async def add_to_blacklist(entry: BlacklistEntry):
-    """
-    Add email/domain to blacklist.
-    """
-    # In production, store in database
     logger.info(f"Added to blacklist: {entry.email or entry.domain}")
     return {"message": "Added to blacklist", "entry": entry}
 
 
 @app.delete("/api/v1/blacklist/{identifier}")
 async def remove_from_blacklist(identifier: str):
-    """
-    Remove email/domain from blacklist.
-    """
     logger.info(f"Removed from blacklist: {identifier}")
     return {"message": f"Removed {identifier} from blacklist"}
 
 
 @app.get("/api/v1/stats")
 async def get_stats():
-    """
-    Get system statistics.
-    """
+    """Get system statistics."""
     queue_stats = email_queue.get_stats() if email_queue else {}
 
     return {
@@ -340,19 +315,12 @@ async def get_stats():
 
 @app.post("/api/v1/feedback")
 async def submit_feedback(job_id: str, is_threat: bool, admin_notes: Optional[str] = None):
-    """
-    Submit admin feedback for human-in-the-loop learning.
-    """
-    # In production, store feedback for model retraining
+    """Submit admin feedback for human-in-the-loop learning."""
     logger.info(f"Feedback for {job_id}: is_threat={is_threat}, notes={admin_notes}")
-
-    # Here you would update a feedback database and potentially trigger retraining
-
     return {"message": "Feedback received", "job_id": job_id}
 
 
 def _get_risk_level(score: float) -> str:
-    """Convert score to risk level"""
     if score >= 0.8:
         return "CRITICAL"
     elif score >= 0.6:
@@ -365,7 +333,6 @@ def _get_risk_level(score: float) -> str:
         return "SAFE"
 
 
-# Run the application
 if __name__ == "__main__":
     uvicorn.run(
         "src.api.main:app",
