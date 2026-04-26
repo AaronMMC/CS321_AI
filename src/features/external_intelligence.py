@@ -207,6 +207,15 @@ class WHOISChecker:
     def __init__(self):
         self.cache = Cache(cache_dir="cache/whois", ttl_hours=24)
 
+    @staticmethod
+    def _normalize_whois_datetime(value):
+        """Normalize WHOIS date fields that may arrive as list/single datetime/None."""
+        if isinstance(value, list):
+            value = value[0] if value else None
+        if isinstance(value, datetime):
+            return value
+        return None
+
     def check_domain(self, domain: str) -> Dict:
         """
         Get WHOIS information for domain.
@@ -233,12 +242,16 @@ class WHOISChecker:
             w = whois.whois(domain)
 
             # Parse creation date
-            creation = w.creation_date
-            if isinstance(creation, list):
-                creation = creation[0]
+            creation = self._normalize_whois_datetime(w.creation_date)
+            expiration = self._normalize_whois_datetime(w.expiration_date)
 
             if creation:
-                age_days = (datetime.now() - creation).days
+                # Keep timezone handling consistent for aware and naive WHOIS datetimes.
+                if creation.tzinfo is not None:
+                    now = datetime.now(creation.tzinfo)
+                else:
+                    now = datetime.now()
+                age_days = (now - creation).days
                 is_new = age_days < 30
 
                 # New domains are more suspicious
@@ -258,7 +271,7 @@ class WHOISChecker:
             result = {
                 'domain': domain,
                 'creation_date': creation.isoformat() if creation else None,
-                'expiration_date': w.expiration_date.isoformat() if w.expiration_date else None,
+                'expiration_date': expiration.isoformat() if expiration else None,
                 'registrar': w.registrar,
                 'age_days': age_days,
                 'is_new': is_new,

@@ -1,7 +1,7 @@
 # Email Security Gateway
 **AI-Powered Phishing & Spam Detection for Philippine Government Email**
 
-A production-ready email security prototype built for CS321. It intercepts inbound SMTP traffic, scores each message with a fine-tuned TinyBERT model, enriches predictions with external threat intelligence (VirusTotal, Google Safe Browsing, WHOIS), and surfaces alerts through a Streamlit admin dashboard and a FastAPI REST service.
+A production-ready email security prototype built for CS321. It intercepts inbound SMTP traffic, scores each message with a lightweight heuristic detector (TinyBERT-compatible interface), enriches predictions with external threat intelligence (VirusTotal, Google Safe Browsing, WHOIS), injects warning/URL protections, and surfaces alerts through a Streamlit admin dashboard and a FastAPI REST service.
 
 ---
 
@@ -31,8 +31,8 @@ Internet / MTA
          │ parsed email dict
          ▼
 ┌─────────────────────┐       ┌──────────────────────┐
-│  TinyBERT Model     │ ◄────►│  Threat Intel Hub    │
-│  (text classifier)  │       │  VirusTotal / WHOIS  │
+│  Threat Detector    │ ◄────►│  Threat Intel Hub    │
+│  (heuristic + API)  │       │  VirusTotal / WHOIS  │
 └────────┬────────────┘       │  Google Safe Browse  │
          │ threat_score       └──────────────────────┘
          ▼
@@ -71,7 +71,7 @@ open http://localhost:8501   # admin / admin123
 open http://localhost:8000/docs
 ```
 
-All three services (API, Dashboard, Redis) start automatically. The AI model downloads from HuggingFace on first run (~500 MB).
+All three services (API, Dashboard, Redis) start automatically.
 
 ---
 
@@ -110,8 +110,8 @@ email-security-gateway/
 │   │   ├── routes.py         # Additional routers
 │   │   ├── dependencies.py   # Dependency injection (model, queue, threat hub)
 │   │   └── schemas.py        # Pydantic request/response models
-│   ├── models/               # ML models
-│   │   ├── tinybert_model.py # Primary TinyBERT classifier
+│   ├── models/               # ML and heuristic model interfaces
+│   │   ├── tinybert_model.py # Primary lightweight detector (TinyBERT-compatible API)
 │   │   ├── bert_classifier.py# Full BERT with external-feature head
 │   │   ├── ensemble.py       # Weighted model ensemble
 │   │   └── utils.py          # Metrics, save/load helpers
@@ -191,8 +191,8 @@ All settings are driven by environment variables loaded from `.env`.
 | `TWILIO_AUTH_TOKEN` | *(empty)* | Twilio auth token |
 | `TELEGRAM_BOT_TOKEN` | *(empty)* | Telegram bot token |
 | `DATABASE_URL` | `sqlite:///email_security.db` | SQLAlchemy database URL |
-| `MODEL_PATH` | `models_saved/bert_phishing_detector_v1` | Path to fine-tuned BERT |
-| `TINYBERT_MODEL_PATH` | `models_saved/tinybert_enron_spam` | Path to fine-tuned TinyBERT |
+| `MODEL_PATH` | `models_saved/bert_phishing_detector_v1` | Optional path to full BERT artifacts |
+| `TINYBERT_MODEL_PATH` | `models_saved/tinybert_enron_spam` | Optional path to saved detector metadata |
 | `ADMIN_EMAIL` | `admin@prototype.local` | Recipient for email alerts |
 | `ADMIN_PHONE` | *(empty)* | Phone number for SMS alerts |
 | `LOG_LEVEL` | `INFO` | Logging verbosity |
@@ -251,13 +251,13 @@ Response:
 ## Training a New Model
 
 ```bash
-# 1. Download datasets
+# 1. Download datasets (optional)
 python scripts/download_datasets.py --all
 
 # 2. (Optional) use only 20% of the data for a quick run
 python scripts/download_datasets.py --train --sample 0.2
 
-# 3. Run quick training (uses TinyBERT, trains in minutes on GPU)
+# 3. Run quick compatibility training/calibration
 python - <<'EOF'
 from src.models.tinybert_model import TinyBERTForEmailSecurity, create_mini_dataset_for_quick_training
 
@@ -267,9 +267,13 @@ history = model.train_quick(texts, labels, epochs=3)
 model.save_model("models_saved/tinybert_custom_v1")
 print("Done!", history)
 EOF
+
+# 4. Train and export a real transformer artifact (optional)
+python scripts/train_real_model.py --epochs 2 --batch-size 8 --output models_saved/real_tinybert
 ```
 
-The saved model directory can be referenced by setting `TINYBERT_MODEL_PATH` in `.env`.
+Set `TINYBERT_MODEL_PATH` in `.env` to a saved model directory.
+If the directory contains transformer artifacts (for example `config.json` + tokenizer files), runtime will load transformer inference; otherwise it falls back to the heuristic backend.
 
 ---
 
@@ -293,8 +297,8 @@ python scripts/test_system.py
 
 ## Troubleshooting
 
-**Model fails to download on first run**
-The TinyBERT weights (~60 MB) are fetched from HuggingFace. Ensure outbound HTTPS is allowed. Set `HF_DATASETS_OFFLINE=1` if you have a local copy.
+**Model behaves as rule-based detector**
+This happens when no transformer artifact path is available. Set `TINYBERT_MODEL_PATH` to a trained artifact directory (for example `models_saved/real_tinybert`) to enable transformer inference.
 
 **Port already in use**
 ```bash
@@ -304,7 +308,7 @@ bash scripts/start_gateway.sh
 ```
 
 **API returns 503 "Model not loaded"**
-The model download or initialisation failed. Check `logs/api.log` for the error. You can also test the model directly:
+Model initialisation failed. Check `logs/api.log` for the error. You can also test the detector directly:
 ```bash
 python -c "from src.models.tinybert_model import TinyBERTForEmailSecurity; m = TinyBERTForEmailSecurity(); print(m.predict('test email'))"
 ```
@@ -314,6 +318,9 @@ This is expected when the API is unreachable. Start the API first (`uvicorn src.
 
 **VirusTotal / Google SB returns zeros**
 No API keys are configured. Add them to `.env`. The system degrades gracefully and still uses model + heuristic scores.
+
+**SMTP warnings/rewritten links are not visible in delivered email**
+Ensure the current `src/gateway/smtp_handler.py` is deployed. Newer code mutates outbound RFC822 bytes before relay so subject/body/header changes survive forwarding.
 
 ---
 

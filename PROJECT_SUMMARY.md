@@ -1,121 +1,56 @@
 # Email Security Gateway - Project Summary
 
 ## Overview
-AI-Powered Phishing & Spam Detection System for Philippine Government Emails
+AI-powered phishing and spam detection gateway for Philippine government email workflows.
 
-## Architecture
-- **API**: FastAPI on port 8000
-- **Dashboard**: Streamlit on port 8501
-- **Model**: TinyBERT for email classification
-- **External Intel**: VirusTotal API (configured)
+## Current Runtime Architecture
+- API: FastAPI on port 8000
+- Dashboard: Streamlit on port 8501
+- Gateway: aiosmtpd SMTP interceptor on port 10025
+- Detection engine: lightweight heuristic model with TinyBERT-compatible interface
+- External intelligence: VirusTotal, Google Safe Browsing, WHOIS (graceful fallback to mock/heuristic behavior when keys are missing)
 
----
+## Security Pipeline (Current Behavior)
+1. Parse inbound SMTP message into structured fields
+2. Run SPF/DKIM/DMARC verification (best-effort)
+3. Compute threat score via heuristic detector + optional external intelligence
+4. Decide action:
+   - >= 0.8: quarantine
+   - 0.4 to < 0.8: warn and deliver
+   - < 0.4: deliver
+5. Apply click-time URL rewriting for delivered messages
+6. Mutate outbound RFC822 content (subject/body/X-Security headers) before SMTP relay
 
-## Session Accomplishments
+## Validation Status (April 26, 2026)
+- Dependencies installed in `.venv`
+- Full test suite passed:
+  - 47 passed
+  - 0 failed
+  - 4 warnings (FastAPI `on_event` deprecation)
+- Launcher self-test passed (`python run.py --test`)
 
-### 1. Security Improvements ✅
-| File | Changes |
-|------|---------|
-| `.env` | Added VirusTotal key, security config, removed Twilio/Telegram |
-| `.gitignore` | Added to protect secrets |
-| `src/dashboard/app.py` | Credentials from environment variables |
-| `src/api/main.py` | CORS from env, rate limiting |
-| `src/api/dependencies.py` | API key enforcement for production |
-
-### 2. Testing ✅
-| Test Suite | Tests | Status |
-|------------|-------|--------|
-| API Tests | 12 | ✅ Pass |
-| Model Tests | 12 | ✅ Pass |
-| Warning Injection | 20 | ✅ Pass |
-| **Total** | **44** | **100% Pass** |
-
-### 3. Dashboard UI Improvements ✅
-- Modern gradient metric cards
-- 5 main pages: Overview, Email Checker, Alerts, Analytics, Settings
-- Risk distribution pie chart
-- Threat timeline chart
-- Better alert cards with color coding
-- Quick test sample buttons
-- Data caching (30 seconds)
-
----
-
-## Configuration
-
-### Environment Variables (.env)
-| Variable | Description | Status |
-|----------|-------------|--------|
-| ENVIRONMENT | development or production | Configurable |
-| CORS_ALLOWED_ORIGINS | Allowed domains | Configured |
-| RATE_LIMIT_ENABLED | Enable rate limiting | Disabled |
-| API_KEY | For external clients | Placeholder |
-| ADMIN_USERNAME | Dashboard login | From env |
-| ADMIN_PASSWORD | Dashboard login | From env |
-| VIRUSTOTAL_API_KEY | e86b4cafe9... | ✅ Configured |
-
----
-
-## How to Run
-
-### Terminal 1 - API
-```bash
-cd D:\CS321_AI
-uvicorn src.api.main:app --reload --port 8000
-```
-
-### Terminal 2 - Dashboard
-```bash
-cd D:\CS321_AI
-streamlit run src/dashboard/app.py --server.port 8501
-```
-
-### Access Points
-- Dashboard: http://localhost:8501
-- API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
-
-### Login Credentials
-- Username: `admin`
-- Password: `admin123`
-
----
-
-## Test Commands
-
-```bash
-# Run all tests
-cd D:\CS321_AI
-python -m pytest tests/ -v
-
-# Quick API test
-curl http://localhost:8000/
-
-# Check email
-curl -X POST http://localhost:8000/api/v1/check-email -H "Content-Type: application/json" -d '{"subject":"Test","body":"Click here http://bit.ly/test"}'
-```
-
----
+## Notable Updates in This Pass
+- Patched SMTP forwarding path so warning and rewritten-link mutations are applied to outgoing message bytes
+- Normalized warning injection to parsed `body_plain`/`body_html` fields
+- Added SMTP regression tests to verify subject/header/body mutation survives forwarding
+- Updated model wrapper compatibility (`tokenize`, `tokenizer`, `train_quick`, metadata save/load) so existing tests and scripts run reliably
 
 ## Known Technical Debt
-1. `@app.on_event` deprecated - should use lifespan handlers
-2. Model auto-downloads ~60MB on first run
-3. Dashboard shows mock data when API unavailable
-4. No health check endpoints
+1. FastAPI startup/shutdown uses deprecated `@app.on_event` instead of lifespan handlers
+2. Linux shell scripts in `scripts/` are not Windows-native orchestration scripts
+3. Some docs and knowledge-vault pages required reconciliation and are now being aligned with code truth
 
----
+## Quick Run Commands
+```bash
+# API + Dashboard
+python run.py
 
-## Files Modified This Session
-- `.env`
-- `.gitignore`
-- `pytest.ini`
-- `tests/conftest.py`
-- `tests/test_api/test_api.py`
-- `src/api/main.py`
-- `src/api/dependencies.py`
-- `src/dashboard/app.py`
+# System self-test
+python run.py --test
 
----
+# Full tests
+python -m pytest tests -v
+```
 
-## Version
-1.0.0 - Updated: April 2026
+## Version Note
+Reconciled and validated state as of April 26, 2026.

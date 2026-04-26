@@ -1,6 +1,44 @@
 # Email Security Gateway - Development Changelog
 ## Project: CS321_AI - AI-Powered Email Security Gateway for Philippine Government
 
+### Session Summary: 2026-04-26
+**Work Completed:** Documentation reconciliation, SMTP delivery-path hardening, dependency validation, full test verification
+
+#### Files Created/Modified:
+
+1. **MODIFIED** `src/gateway/smtp_handler.py`
+   - Persisted threat/auth context in processing payload
+   - Fixed warning injection input/output mapping to parsed body fields
+   - Added outbound RFC822 mutation path before SMTP relay
+   - Forwarder now sends modified content (subject/body/X-Security headers)
+
+2. **MODIFIED** `src/models/tinybert_model.py`
+   - Added tokenizer compatibility (`tokenizer` attribute + `tokenize()`)
+   - Added compatibility training loop (`train_quick`) with epoch metrics
+   - Added metadata save/load compatibility (`save_model`, `load_model`, `save_pretrained`, `from_pretrained`)
+   - Added constructor compatibility for `model_name` / `max_length` callers
+
+3. **NEW** `tests/test_gateway/test_smtp_handler.py`
+   - Added regression tests for plain and multipart outgoing content mutation
+   - Added test verifying warning injection consumes parsed `body_plain`
+
+4. **MODIFIED** Documentation and status records
+   - `README.md`
+   - `PROJECT_SUMMARY.md`
+   - `IMPROVEMENT_SUMMARY.md`
+   - `knowledge-vault/wiki/*` core pages
+
+#### Verification Results:
+- ✅ Dependencies installed in `.venv` from `requirements.txt`
+- ✅ Full test suite passed: **47 passed, 0 failed**
+- ✅ Launcher self-test passed: `python run.py --test`
+- ⚠ FastAPI deprecation warnings remain for `@app.on_event` (startup/shutdown)
+
+#### Status Notes:
+- SMTP warning/rewrite changes now apply to actual forwarded messages
+- Project docs now reflect current code behavior (heuristic TinyBERT-compatible detector baseline)
+- Feature progress text in older entries is retained as historical context
+
 ### Session Summary: 2026-04-02
 **Work Completed:** Feature #1 - Email Warning Injection Module
 

@@ -1,107 +1,72 @@
 # Email Security Gateway Improvement Summary
 
-## Overview
-This document summarizes the improvements made to the Email Security Gateway project, focusing on enhancing the threat detection model's accuracy while maintaining a lightweight footprint suitable for deployment.
+Date: April 26, 2026
 
-## Key Improvements
+## Scope of This Improvement Pass
+- Reconcile documentation with actual implementation behavior
+- Install dependencies and validate with full automated tests
+- Patch SMTP forwarding so modified warning/URL content is actually delivered
+- Re-check end-to-end logic alignment against project objectives
 
-### 1. Enhanced Threat Detection Model
-- **Problem**: Original model had accuracy issues despite using the ScratchTransformerClassifier architecture
-- **Solution**: 
-  - Trained an improved TinyBERT model with embed_dim=128, num_heads=4, num_layers=2
-  - Achieved 100% validation accuracy and F1-score on test set
-  - Model footprint: ~1.8MB (efficient for deployment)
-  - Total parameters: 424,514
+## Implemented Improvements
 
-### 2. Intelligent Model Wrapper (`src/models/tinybert_model.py`)
-- Added intelligent model loading that prioritizes the improved model
-- Implemented fallback mechanisms to ensure system reliability
-- Added automatic quick-training when no pre-trained model is available
-- Maintained backward compatibility with existing interfaces
+### 1. SMTP Delivery-Path Fix (Critical)
+Updated `src/gateway/smtp_handler.py` so mutations done during analysis are reflected in outbound SMTP payloads:
+- Subject rewrite now persists to forwarded message
+- `X-Security-*` headers now persist to forwarded message
+- Rewritten/warned body content now persists to forwarded message
+- Forwarder now builds outgoing RFC822 bytes from updated email state before relay
 
-### 3. Knowledge Management System (Claude-Obsidian Practices)
-- Implemented persistent knowledge vault structure:
-  ```
-  knowledge-vault/
-  ├── .raw/                 # Source documents (immutable)
-  ├── wiki/                 # Generated knowledge base
-  │   ├── index.md          # Master catalog
-  │   ├── log.md            # Chronological operations record
-  │   ├── hot.md            # Recent context summary (~500 words)
-  │   ├── overview.md       # Executive summary
-  │   ├── sources/          # One summary page per raw source
-  │   ├── entities/         # People, orgs, products, repos
-  │   ├── concepts/         # Ideas, patterns, frameworks
-  │   ├── domains/          # Top-level topic areas
-  │   ├── comparisons/      # Side-by-side analyses
-  │   ├── questions/        # Filed answers to user queries
-  │   └── meta/             # Dashboards, lint reports, conventions
-  └── CLAUDE.md             # Vault schema and instructions
-  ```
-- Hot cache mechanism for quick context restoration
-- Cross-project referencing capabilities
-- Manifest tracking for source documents
+### 2. Warning Injection Field Normalization
+Fixed mismatch between parser fields and warning injector expectations:
+- Gateway now maps parsed `body_plain` / `body_html` to warning injector input
+- Warning output is synced back into parser-friendly fields used by downstream URL rewriting and forwarding
+- Threat score/risk/auth context is persisted into `email_data` before warning decisions
 
-### 4. Agent Skills System
-- Created standardized skill definitions in `.opencode/skills/`:
-  - `email-analysis`: Analyze emails for threats using the 4-layer security system
-  - `model-training`: Train and optimize the email threat detection model
-  - `system-monitoring`: Monitor and analyze system performance
-  - `dashboard-management`: Manage and configure the Email Security Gateway dashboard
+### 3. Model Compatibility Hardening
+Enhanced `src/models/tinybert_model.py` to keep lightweight behavior while maintaining compatibility with existing tests/scripts:
+- Added tokenizer compatibility (`tokenizer` object and `tokenize()` method)
+- Added training compatibility (`train_quick()` now returns epoch-wise metrics)
+- Added persistence compatibility (`save_model`, `load_model`, `save_pretrained`, `from_pretrained`)
+- Added constructor compatibility for callers passing `model_name`/`max_length`
 
-### 5. Configuration Updates
-- Updated `.env` to point to the improved model: `TINYBERT_MODEL_PATH=models_saved/improved_tinybert_enron_spam`
+### 4. Regression Test Coverage Added
+New test file: `tests/test_gateway/test_smtp_handler.py`
+- Verifies subject/header/body mutations are applied to outgoing plain-text messages
+- Verifies multipart plain/html message mutation path
+- Verifies warning injection correctly uses parsed body fields (`body_plain`)
 
-## Model Performance
-The improved model demonstrates:
-- Validation Accuracy: 100.0%
-- Validation F1-Score: 1.000
-- Final Training Loss: 0.4804
-- Storage Footprint: ~1.8MB
-- Inference Latency: <50ms per email on modern CPU
-- Memory Footprint: <50MB RAM during operation
+### 5. Environment and Validation
+- Installed full dependencies from `requirements.txt` into `.venv`
+- Full tests executed successfully: **47 passed, 0 failed**
+- Launcher smoke test succeeded: `python run.py --test`
 
-## Sample Predictions
-- "Meeting at 10am tomorrow" → LEGITIMATE (0.118 threat score)
-- "URGENT: click here to verify your GCash account now" → SUSPICIOUS (0.570 threat score)
-- "Your package is delayed, track here: http://bit.ly/track-package" → LEGITIMATE (0.326 threat score)
-- "URGENT: Your account will be suspended! Verify now: http://bit.ly/verify-account" → SUSPICIOUS (0.641 threat score)
+## Project-Goal Alignment Check
+Current implementation aligns with the intended gateway objective:
+- Intercept inbound email
+- Analyze threat indicators with model + intelligence
+- Apply user-facing warning controls for suspicious messages
+- Apply click-time URL protections
+- Quarantine high-risk messages
+- Expose API + dashboard operational visibility
 
-## Deployment Benefits
-1. **Storage Efficient**: <2MB total model footprint
-2. **Fast Inference**: <50ms per email on modern CPU
-3. **Low Memory**: <50MB RAM during operation
-4. **No External Dependencies**: Pure PyTorch implementation
-5. **Easy Updates**: Simple retraining pipeline
+## Remaining Gaps / Technical Debt
+1. FastAPI `@app.on_event` deprecation warnings (migrate to lifespan handlers)
+2. Documentation maintenance cadence should stay aligned with implementation updates
+3. Cross-platform orchestration scripts can be improved for first-class Windows parity
 
-## Future Enhancements
-1. **Larger Vocabulary**: Increase to 5,000-10,000 tokens for better coverage
-2. **Longer Sequences**: Increase max_length from 256 to 512 for full email analysis
-3. **Additional Features**: Integrate sender/domain features with text analysis
-4. **Ensemble Methods**: Combine multiple checkpoint predictions
-5. **Domain Adaptation**: Fine-tune on organization-specific email patterns
+## Files Updated in This Pass
+- `src/gateway/smtp_handler.py`
+- `src/models/tinybert_model.py`
+- `tests/test_gateway/test_smtp_handler.py`
+- `README.md`
+- `PROJECT_SUMMARY.md`
+- `IMPROVEMENT_SUMMARY.md`
+- `CHANGELOG.md`
+- `knowledge-vault/wiki/hot.md`
+- `knowledge-vault/wiki/index.md`
+- `knowledge-vault/wiki/overview.md`
+- `knowledge-vault/wiki/log.md`
+- `knowledge-vault/wiki/concepts/improved-model.md`
+- `knowledge-vault/CLAUDE.md`
 
-## Files Modified
-- `src/models/tinybert_model.py` - Enhanced model wrapper with fallback mechanisms
-- `.env` - Updated to point to improved model path
-- `run.py` - Fixed color helpers for Windows compatibility
-- Created knowledge vault structure in `knowledge-vault/`
-- Created agent skills in `.opencode/skills/`
-- Saved model artifacts to `models_saved/improved_tinybert_enron_spam/`
-
-## Knowledge Vault Contents
-- `knowledge-vault/wiki/concepts/improved-model.md` - Detailed documentation of the improved model
-- `knowledge-vault/wiki/log.md` - Chronicle of improvements and changes
-- `knowledge-vault/wiki/hot.md` - Current session context summary
-- `knowledge-vault/wiki/overview.md` - System architecture overview
-- `knowledge-vault/wiki/index.md` - Master catalog of all knowledge base entries
-
-## Verification
-The system has been validated to ensure:
-- The improved model is being used by the threat detection component
-- Core system components (model loading, prediction) function correctly
-- Knowledge vault is properly structured and accessible
-- Agent skills system is in place for future extensions
-- Configuration points to the correct model artifacts
-
-This implementation successfully addresses the original concern about model inaccuracies while maintaining the lightweight, deployable nature of the Email Security Gateway system.

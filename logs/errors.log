@@ -27,3 +27,65 @@ If this is a private repository, make sure to pass a token having permission to 
 2026-04-19 19:51:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
 2026-04-19 19:51:59 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
 2026-04-19 19:51:59 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:35:56 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:35:57 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:35:57 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:35:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:35:59 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:36:00 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:36:01 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:36:01 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:37:16 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:37:17 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:37:17 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:37:18 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:37:19 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:37:19 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:37:20 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:37:21 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:41:23 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:41:24 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:41:24 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:41:36 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:41:37 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:42:15 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:42:17 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:42:18 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:42:18 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:42:19 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:42:19 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:50:03 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:50:03 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:50:04 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:50:05 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:50:05 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:50:06 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:43:45 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:46 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 04:43:47 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:47 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:43:55 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:56 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:43:56 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:57 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 04:43:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:58 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:44:27 | ERROR    | scripts.download_datasets:create_training_data:191 - Failed to load combined_fraud: No columns to parse from file
+2026-04-27 04:44:27 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 04:44:50 | ERROR    | scripts.download_datasets:create_training_data:191 - Failed to load combined_fraud: No columns to parse from file
+2026-04-27 04:44:50 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 04:45:12 | ERROR    | scripts.download_datasets:create_training_data:191 - Failed to load combined_fraud: No columns to parse from file
+2026-04-27 04:45:12 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 04:48:57 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:48:58 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:48:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:48:59 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 04:49:00 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:49:00 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:57:52 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 05:04:38 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:04:38 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 05:04:47 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:04:47 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 05:04:48 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:04:48 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400

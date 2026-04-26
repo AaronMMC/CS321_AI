@@ -158,8 +158,14 @@ async def startup_event():
 
     # Load model
     try:
-        model = TinyBERTForEmailSecurity()
-        logger.info("Model loaded successfully")
+        configured_model_path = os.getenv("TINYBERT_MODEL_PATH", "").strip() or None
+        model = TinyBERTForEmailSecurity(model_path=configured_model_path)
+        logger.info(
+            "Model loaded successfully | backend={} | source={} | configured_path={}",
+            getattr(model, "backend", "unknown"),
+            getattr(model, "model_name", "unknown"),
+            configured_model_path or "(not set)",
+        )
     except Exception as e:
         logger.error(f"Failed to load model: {e}")
         model = None

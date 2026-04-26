@@ -282,3 +282,435 @@ If this is a private repository, make sure to pass a token having permission to 
 2026-04-19 19:52:02 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
 2026-04-19 19:52:04 | INFO     | src.models.tinybert_model:__init__:57 - Initialized TinyBERT on cpu
 2026-04-19 19:52:04 | INFO     | src.models.tinybert_model:__init__:59 - Model parameters: 11,171,074
+2026-04-26 22:35:42 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:35:55 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-26 22:35:55 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:35:55 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:35:55 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-26 22:35:55 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-26 22:35:56 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:35:57 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:35:57 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:35:57 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-26 22:35:57 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-26 22:35:57 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-26 22:35:57 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-26 22:35:58 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:35:58 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:35:58 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:35:58 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:35:58 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:35:58 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:35:58 | INFO     | src.models.tinybert_model:train_quick:266 - Heuristic train_quick completed
+2026-04-26 22:35:58 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:35:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:35:58 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:35:59 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:35:59 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:36:00 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:36:01 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:36:01 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:36:01 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:36:01 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:36:01 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:11 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:37:15 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-26 22:37:15 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:15 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:37:15 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-26 22:37:15 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-26 22:37:16 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:37:17 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:37:17 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:37:17 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-26 22:37:17 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-26 22:37:17 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-26 22:37:17 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-26 22:37:17 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:344 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-26 22:37:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:17 | INFO     | src.models.tinybert_model:train_quick:266 - Heuristic train_quick completed
+2026-04-26 22:37:17 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:37:18 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:37:18 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:37:19 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:37:19 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:37:19 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:37:20 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:37:21 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:37:21 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:37:21 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:21 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:32 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:37:36 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:37:36 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-26 22:40:32 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:40:52 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-26 22:40:52 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-26 22:40:52 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:40:52 | INFO     | src.api.main:startup_event:162 - Model loaded successfully
+2026-04-26 22:40:52 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:40:52 | INFO     | src.api.main:startup_event:177 - Processor started
+2026-04-26 22:40:52 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-26 22:40:52 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-26 22:40:52 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-26 22:40:55 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:40:59 | INFO     | src.gateway.smtp_handler:run_gateway:523 - Initializing Email Security Gateway...
+2026-04-26 22:40:59 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:40:59 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:41:01 | INFO     | src.gateway.smtp_handler:start:492 - Email gateway started on localhost:10025
+2026-04-26 22:41:22 | INFO     | src.api.main:check_email:214 - Email check request from 127.0.0.1: subject='URGENT: Account Verification Required...'
+2026-04-26 22:41:23 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:41:24 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-04-26 22:41:24 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:41:24 | INFO     | src.gateway.queue_manager:_worker:153 - Worker 0 processing job job_1777214484.533526_-5313683065577185159
+2026-04-26 22:41:32 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:41:35 | INFO     | __main__:test_model:121 - Loading model...
+2026-04-26 22:41:35 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:41:35 | SUCCESS  | __main__:test_model:123 - ✓ Model loaded
+2026-04-26 22:41:35 | SUCCESS  | __main__:test_model:131 - ✓ Legitimate email correctly scored: 0.00%
+2026-04-26 22:41:35 | SUCCESS  | __main__:test_model:141 - ✓ Phishing email detected: 80.00%
+2026-04-26 22:41:35 | INFO     | __main__:test_gateway:154 - 
+==================================================
+2026-04-26 22:41:35 | INFO     | __main__:test_gateway:155 - TESTING GATEWAY
+2026-04-26 22:41:35 | INFO     | __main__:test_gateway:156 - ==================================================
+2026-04-26 22:41:35 | SUCCESS  | __main__:test_gateway:166 - ✓ Gateway listening on port 10025
+2026-04-26 22:41:35 | INFO     | __main__:test_threat_intelligence:178 - 
+==================================================
+2026-04-26 22:41:35 | INFO     | __main__:test_threat_intelligence:179 - TESTING THREAT INTELLIGENCE
+2026-04-26 22:41:35 | INFO     | __main__:test_threat_intelligence:180 - ==================================================
+2026-04-26 22:41:35 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-04-26 22:41:35 | SUCCESS  | __main__:test_threat_intelligence:186 - ✓ Threat Intelligence Hub initialized
+2026-04-26 22:41:36 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:41:36 | INFO     | __main__:test_threat_intelligence:191 -   VirusTotal score: 10.83%
+2026-04-26 22:41:37 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:41:37 | INFO     | __main__:test_threat_intelligence:196 -   WHOIS: deped.gov.ph - age: None days
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:222 - 
+==================================================
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:223 - TEST SUMMARY
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:224 - ==================================================
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:229 -   API: ✓ PASS
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:229 -   DASHBOARD: ✓ PASS
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:229 -   MODEL: ✓ PASS
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:229 -   GATEWAY: ✓ PASS
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:229 -   THREAT_INTEL: ✓ PASS
+2026-04-26 22:41:37 | INFO     | __main__:run_all_tests:233 - ==================================================
+2026-04-26 22:41:37 | SUCCESS  | __main__:run_all_tests:236 - 
+✅ All tests passed! System is ready.
+2026-04-26 22:42:10 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:42:14 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-26 22:42:15 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:15 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:42:15 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-26 22:42:15 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-26 22:42:15 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:42:17 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:42:17 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-26 22:42:17 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-26 22:42:17 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-26 22:42:17 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-26 22:42:17 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:344 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-26 22:42:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:17 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:17 | INFO     | src.models.tinybert_model:train_quick:266 - Heuristic train_quick completed
+2026-04-26 22:42:17 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:42:18 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:42:18 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:42:18 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:42:18 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:42:19 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:42:19 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:42:19 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:42:19 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:19 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:42:29 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:49:50 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:49:54 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:49:54 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-26 22:49:58 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-26 22:50:02 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-26 22:50:02 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:02 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:50:02 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-26 22:50:02 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-26 22:50:03 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:50:03 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:50:03 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-26 22:50:03 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-26 22:50:03 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-26 22:50:03 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-26 22:50:03 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:344 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-26 22:50:03 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:03 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:03 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:03 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:03 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:03 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:03 | INFO     | src.models.tinybert_model:train_quick:266 - Heuristic train_quick completed
+2026-04-26 22:50:03 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:50:04 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:50:04 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:50:05 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-26 22:50:05 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:50:05 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-26 22:50:06 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-26 22:50:06 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-26 22:50:06 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-26 22:50:06 | INFO     | src.models.tinybert_model:__init__:95 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:39 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:43:44 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:44 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:44 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:44 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:44 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:44 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:44 | INFO     | src.models.tinybert_model:_train_heuristic_quick:405 - Heuristic train_quick completed
+2026-04-27 04:43:44 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:45 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:45 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:46 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 04:43:46 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:47 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:47 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:43:47 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:47 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:47 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:51 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:43:54 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 04:43:54 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:54 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:55 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-27 04:43:55 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-27 04:43:55 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:56 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:43:56 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-27 04:43:56 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-27 04:43:56 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-27 04:43:56 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-27 04:43:56 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:344 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-27 04:43:56 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:56 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:56 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:56 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:56 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:56 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:56 | INFO     | src.models.tinybert_model:_train_heuristic_quick:405 - Heuristic train_quick completed
+2026-04-27 04:43:56 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:56 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:56 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:57 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 04:43:57 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:43:58 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:43:58 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:43:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:43:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:44:06 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:44:25 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:44:27 | INFO     | __main__:main:187 - Preparing training data
+2026-04-27 04:44:27 | INFO     | scripts.download_datasets:create_training_data:156 - 
+==================================================
+2026-04-27 04:44:27 | INFO     | scripts.download_datasets:create_training_data:157 - CREATING TRAINING DATASET
+2026-04-27 04:44:27 | INFO     | scripts.download_datasets:create_training_data:158 - ==================================================
+2026-04-27 04:44:27 | ERROR    | scripts.download_datasets:create_training_data:191 - Failed to load combined_fraud: No columns to parse from file
+2026-04-27 04:44:27 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 04:44:27 | WARNING  | scripts.download_datasets:_create_synthetic_data:216 - Creating synthetic training data
+2026-04-27 04:44:27 | INFO     | scripts.download_datasets:_create_synthetic_data:251 - ✓ Synthetic dataset created: 600 samples
+2026-04-27 04:44:27 | INFO     | __main__:main:190 - Dataset source: D:\CS321_AI\data\processed\synthetic_training_data.csv
+2026-04-27 04:44:27 | INFO     | __main__:main:191 - Samples: 600
+2026-04-27 04:44:27 | INFO     | __main__:main:192 - Label distribution: legit=300 phishing=300
+2026-04-27 04:44:27 | INFO     | __main__:main:203 - Initializing model backend
+2026-04-27 04:44:31 | WARNING  | src.models.tinybert_model:_try_load_transformer:191 - Failed to initialize transformer backend from prajjwal1/bert-tiny: Couldn't instantiate the backend tokenizer from one of: 
+(1) a `tokenizers` library serialization file, 
+(2) a slow tokenizer instance to convert or 
+(3) an equivalent slow tokenizer class to instantiate and convert. 
+You need to have sentencepiece or tiktoken installed to convert a slow tokenizer to a fast one.
+2026-04-27 04:44:31 | WARNING  | src.models.tinybert_model:__init__:120 - Requested transformer backend but initialization failed; using heuristic backend
+2026-04-27 04:44:31 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:44:31 | INFO     | __main__:main:211 - Selected backend: heuristic
+2026-04-27 04:44:34 | WARNING  | src.models.tinybert_model:_try_load_transformer:191 - Failed to initialize transformer backend from prajjwal1/bert-tiny: Couldn't instantiate the backend tokenizer from one of: 
+(1) a `tokenizers` library serialization file, 
+(2) a slow tokenizer instance to convert or 
+(3) an equivalent slow tokenizer class to instantiate and convert. 
+You need to have sentencepiece or tiktoken installed to convert a slow tokenizer to a fast one.
+2026-04-27 04:44:34 | WARNING  | src.models.tinybert_model:_train_transformer_quick:463 - Transformer backend unavailable; using heuristic compatibility training
+2026-04-27 04:44:34 | INFO     | src.models.tinybert_model:_train_heuristic_quick:405 - Heuristic train_quick completed
+2026-04-27 04:44:34 | SUCCESS  | __main__:main:249 - Training complete. Backend=heuristic
+2026-04-27 04:44:34 | SUCCESS  | __main__:main:250 - Validation accuracy: 0.6667
+2026-04-27 04:44:34 | SUCCESS  | __main__:main:251 - Artifacts saved to: models_saved\real_tinybert
+2026-04-27 04:44:34 | INFO     | __main__:main:252 - Set TINYBERT_MODEL_PATH to this output directory for runtime loading
+2026-04-27 04:44:48 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:44:50 | INFO     | __main__:main:187 - Preparing training data
+2026-04-27 04:44:50 | INFO     | scripts.download_datasets:create_training_data:156 - 
+==================================================
+2026-04-27 04:44:50 | INFO     | scripts.download_datasets:create_training_data:157 - CREATING TRAINING DATASET
+2026-04-27 04:44:50 | INFO     | scripts.download_datasets:create_training_data:158 - ==================================================
+2026-04-27 04:44:50 | ERROR    | scripts.download_datasets:create_training_data:191 - Failed to load combined_fraud: No columns to parse from file
+2026-04-27 04:44:50 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 04:44:50 | WARNING  | scripts.download_datasets:_create_synthetic_data:216 - Creating synthetic training data
+2026-04-27 04:44:50 | INFO     | scripts.download_datasets:_create_synthetic_data:251 - ✓ Synthetic dataset created: 600 samples
+2026-04-27 04:44:50 | INFO     | __main__:main:190 - Dataset source: D:\CS321_AI\data\processed\synthetic_training_data.csv
+2026-04-27 04:44:50 | INFO     | __main__:main:191 - Samples: 600
+2026-04-27 04:44:50 | INFO     | __main__:main:192 - Label distribution: legit=300 phishing=300
+2026-04-27 04:44:50 | INFO     | __main__:main:203 - Initializing model backend
+2026-04-27 04:44:54 | WARNING  | src.models.tinybert_model:_try_load_transformer:192 - Failed to initialize transformer backend from prajjwal1/bert-tiny: Couldn't instantiate the backend tokenizer from one of: 
+(1) a `tokenizers` library serialization file, 
+(2) a slow tokenizer instance to convert or 
+(3) an equivalent slow tokenizer class to instantiate and convert. 
+You need to have sentencepiece or tiktoken installed to convert a slow tokenizer to a fast one.
+2026-04-27 04:44:54 | WARNING  | src.models.tinybert_model:__init__:120 - Requested transformer backend but initialization failed; using heuristic backend
+2026-04-27 04:44:54 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:44:54 | INFO     | __main__:main:211 - Selected backend: heuristic
+2026-04-27 04:44:57 | WARNING  | src.models.tinybert_model:_try_load_transformer:192 - Failed to initialize transformer backend from prajjwal1/bert-tiny: Couldn't instantiate the backend tokenizer from one of: 
+(1) a `tokenizers` library serialization file, 
+(2) a slow tokenizer instance to convert or 
+(3) an equivalent slow tokenizer class to instantiate and convert. 
+You need to have sentencepiece or tiktoken installed to convert a slow tokenizer to a fast one.
+2026-04-27 04:44:57 | WARNING  | src.models.tinybert_model:_train_transformer_quick:464 - Transformer backend unavailable; using heuristic compatibility training
+2026-04-27 04:44:57 | INFO     | src.models.tinybert_model:_train_heuristic_quick:406 - Heuristic train_quick completed
+2026-04-27 04:44:57 | SUCCESS  | __main__:main:249 - Training complete. Backend=heuristic
+2026-04-27 04:44:57 | SUCCESS  | __main__:main:250 - Validation accuracy: 0.6667
+2026-04-27 04:44:57 | SUCCESS  | __main__:main:251 - Artifacts saved to: models_saved\real_tinybert
+2026-04-27 04:44:57 | INFO     | __main__:main:252 - Set TINYBERT_MODEL_PATH to this output directory for runtime loading
+2026-04-27 04:45:09 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:45:12 | INFO     | __main__:main:187 - Preparing training data
+2026-04-27 04:45:12 | INFO     | scripts.download_datasets:create_training_data:156 - 
+==================================================
+2026-04-27 04:45:12 | INFO     | scripts.download_datasets:create_training_data:157 - CREATING TRAINING DATASET
+2026-04-27 04:45:12 | INFO     | scripts.download_datasets:create_training_data:158 - ==================================================
+2026-04-27 04:45:12 | ERROR    | scripts.download_datasets:create_training_data:191 - Failed to load combined_fraud: No columns to parse from file
+2026-04-27 04:45:12 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 04:45:12 | WARNING  | scripts.download_datasets:_create_synthetic_data:216 - Creating synthetic training data
+2026-04-27 04:45:12 | INFO     | scripts.download_datasets:_create_synthetic_data:251 - ✓ Synthetic dataset created: 600 samples
+2026-04-27 04:45:12 | INFO     | __main__:main:190 - Dataset source: D:\CS321_AI\data\processed\synthetic_training_data.csv
+2026-04-27 04:45:12 | INFO     | __main__:main:191 - Samples: 600
+2026-04-27 04:45:12 | INFO     | __main__:main:192 - Label distribution: legit=300 phishing=300
+2026-04-27 04:45:12 | INFO     | __main__:main:203 - Initializing model backend
+2026-04-27 04:45:43 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from distilbert-base-uncased on cpu
+2026-04-27 04:45:43 | INFO     | __main__:main:211 - Selected backend: transformer
+2026-04-27 04:48:32 | INFO     | src.models.tinybert_model:save_model:590 - Transformer model artifacts saved to models_saved\real_tinybert_distilbert
+2026-04-27 04:48:32 | INFO     | src.models.tinybert_model:_train_transformer_quick:531 - Transformer train_quick completed
+2026-04-27 04:48:32 | SUCCESS  | __main__:main:249 - Training complete. Backend=transformer
+2026-04-27 04:48:32 | SUCCESS  | __main__:main:250 - Validation accuracy: 1.0000
+2026-04-27 04:48:32 | SUCCESS  | __main__:main:251 - Artifacts saved to: models_saved\real_tinybert_distilbert
+2026-04-27 04:48:32 | INFO     | __main__:main:252 - Set TINYBERT_MODEL_PATH to this output directory for runtime loading
+2026-04-27 04:48:42 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:48:45 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_distilbert on cpu
+2026-04-27 04:48:53 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:48:56 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 04:48:57 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:48:57 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:48:57 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-27 04:48:57 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-27 04:48:57 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:48:58 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:48:58 | INFO     | src.api.main:check_email:214 - Email check request from testclient: subject='Test subject...'
+2026-04-27 04:48:58 | INFO     | src.api.main:submit_feedback:415 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-27 04:48:58 | INFO     | src.api.main:add_to_whitelist:360 - Added to whitelist: trusted@deped.gov.ph
+2026-04-27 04:48:58 | INFO     | src.api.main:add_to_blacklist:379 - Added to blacklist: banned@example.com
+2026-04-27 04:48:58 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:344 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-27 04:48:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:48:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:48:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:48:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:48:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:48:58 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:48:58 | INFO     | src.models.tinybert_model:_train_heuristic_quick:406 - Heuristic train_quick completed
+2026-04-27 04:48:58 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:48:58 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:48:58 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:48:59 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 04:48:59 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:49:00 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 04:49:00 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 04:49:00 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 04:49:00 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:49:00 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 04:57:50 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 04:57:52 | INFO     | __main__:main:202 - Preparing training data
+2026-04-27 04:57:52 | INFO     | scripts.download_datasets:create_training_data:156 - 
+==================================================
+2026-04-27 04:57:52 | INFO     | scripts.download_datasets:create_training_data:157 - CREATING TRAINING DATASET
+2026-04-27 04:57:52 | INFO     | scripts.download_datasets:create_training_data:158 - ==================================================
+2026-04-27 04:57:52 | ERROR    | scripts.download_datasets:create_training_data:194 - No datasets available - creating synthetic data
+2026-04-27 04:57:52 | WARNING  | scripts.download_datasets:_create_synthetic_data:216 - Creating synthetic training data
+2026-04-27 04:57:52 | INFO     | scripts.download_datasets:_create_synthetic_data:251 - ✓ Synthetic dataset created: 600 samples
+2026-04-27 04:57:52 | INFO     | __main__:main:205 - Dataset source: data\raw\combined_fraud_detection_dataset.csv
+2026-04-27 04:57:52 | INFO     | __main__:main:206 - Samples: 600
+2026-04-27 04:57:52 | INFO     | __main__:main:207 - Label distribution: legit=300 phishing=300
+2026-04-27 04:57:52 | INFO     | __main__:main:218 - Initializing model backend
+2026-04-27 04:57:55 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from distilbert-base-uncased on cpu
+2026-04-27 04:57:55 | INFO     | __main__:main:226 - Selected backend: transformer
+2026-04-27 05:00:37 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 05:00:53 | INFO     | __main__:main:202 - Preparing training data
+2026-04-27 05:00:53 | INFO     | __main__:main:205 - Dataset source: data\raw\combined_fraud_detection_dataset.csv
+2026-04-27 05:00:53 | INFO     | __main__:main:206 - Samples: 600
+2026-04-27 05:00:53 | INFO     | __main__:main:207 - Label distribution: legit=300 phishing=300
+2026-04-27 05:00:53 | INFO     | __main__:main:218 - Initializing model backend
+2026-04-27 05:00:56 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from distilbert-base-uncased on cpu
+2026-04-27 05:00:56 | INFO     | __main__:main:226 - Selected backend: transformer
+2026-04-27 05:03:47 | INFO     | src.models.tinybert_model:save_model:590 - Transformer model artifacts saved to models_saved\real_tinybert_selected_dataset
+2026-04-27 05:03:47 | INFO     | src.models.tinybert_model:_train_transformer_quick:531 - Transformer train_quick completed
+2026-04-27 05:03:48 | SUCCESS  | __main__:main:264 - Training complete. Backend=transformer
+2026-04-27 05:03:48 | SUCCESS  | __main__:main:265 - Validation accuracy: 1.0000
+2026-04-27 05:03:48 | SUCCESS  | __main__:main:266 - Artifacts saved to: models_saved\real_tinybert_selected_dataset
+2026-04-27 05:03:48 | INFO     | __main__:main:267 - Set TINYBERT_MODEL_PATH to this output directory for runtime loading
+2026-04-27 05:04:01 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 05:04:03 | INFO     | __main__:main:111 - Evaluation source: data\raw\combined_fraud_detection_dataset.csv
+2026-04-27 05:04:03 | INFO     | __main__:main:112 - Test samples: 120
+2026-04-27 05:04:03 | INFO     | __main__:main:113 - Label distribution: legit=60 phishing=60
+2026-04-27 05:04:03 | INFO     | src.models.tinybert_model:_initialize_heuristic_backend:131 - Initialized heuristic-based threat detection model
+2026-04-27 05:04:04 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:04 | SUCCESS  | __main__:main:154 - Backend comparison complete
+2026-04-27 05:04:04 | INFO     | __main__:main:155 - Heuristic metrics: {'accuracy': 0.6666666666666666, 'precision': 1.0, 'recall': 0.3333333333333333, 'f1': 0.5, 'auc': 0.97}
+2026-04-27 05:04:04 | INFO     | __main__:main:156 - Transformer metrics: {'accuracy': 1.0, 'precision': 1.0, 'recall': 1.0, 'f1': 1.0, 'auc': 1.0}
+2026-04-27 05:04:04 | INFO     | __main__:main:157 - Results saved to models_saved\backend_comparison_selected_dataset.json
+2026-04-27 05:04:12 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 05:04:16 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:17 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 05:04:33 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 05:04:36 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 05:04:37 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:37 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 05:04:37 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-27 05:04:37 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-27 05:04:38 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:04:38 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 05:04:38 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Test subject...'
+2026-04-27 05:04:38 | INFO     | src.api.main:submit_feedback:421 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-27 05:04:38 | INFO     | src.api.main:add_to_whitelist:366 - Added to whitelist: trusted@deped.gov.ph
+2026-04-27 05:04:38 | INFO     | src.api.main:add_to_blacklist:385 - Added to blacklist: banned@example.com
+2026-04-27 05:04:38 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:344 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-27 05:04:38 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:38 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:38 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:39 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:39 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:39 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:46 | INFO     | src.models.tinybert_model:_train_transformer_quick:531 - Transformer train_quick completed
+2026-04-27 05:04:46 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 05:04:47 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:04:47 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 05:04:47 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 05:04:47 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 05:04:48 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:04:48 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 05:04:48 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 05:04:48 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:04:49 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:05:05 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 05:05:09 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 05:05:09 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 05:05:10 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:05:10 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved\real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 05:05:10 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 05:05:10 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 05:05:10 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers

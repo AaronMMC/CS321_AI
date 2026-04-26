@@ -6,8 +6,9 @@ Acts as a proxy between mail server and employees' inboxes.
 import asyncio
 import smtplib
 import time
-from email.message import EmailMessage
-from typing import Optional, Callable, Awaitable, Dict
+from email import message_from_bytes
+from email.policy import default
+from typing import Optional, Dict, Any
 from aiosmtpd.controller import Controller
 from aiosmtpd.handlers import Message
 from loguru import logger
@@ -130,6 +131,13 @@ class EmailSecurityHandler(Message):
                     if 'auth_reasons' not in alert:
                         alert['auth_reasons'] = auth_result.get('reasons', [])
 
+            # Persist model/auth outcomes on the working email payload
+            email_data['threat_score'] = threat_score
+            email_data['risk_level'] = self._get_risk_level(threat_score)
+            if auth_result and not auth_result.get('passed', True):
+                email_data['authentication_failed'] = True
+                email_data['auth_reasons'] = auth_result.get('reasons', [])
+
             # Process based on threat level
             action = self._determine_action(threat_score)
 
@@ -151,7 +159,7 @@ class EmailSecurityHandler(Message):
                 # Deliver normally but maybe add warning
                 if action['warn']:
                     warning_start = time.time()
-                    await self._add_warning_to_email(email_data)
+                    await self._add_warning_to_email(email_data, alert)
                     warning_time = time.time() - warning_start
                     record_warning_added(warning_time)
 
@@ -171,7 +179,7 @@ class EmailSecurityHandler(Message):
                 email_data.update(protected_email)
 
                 # Forward to actual mail server
-                await self._forward_email(envelope)
+                await self._forward_email(envelope, email_data)
 
                 # Send alert if needed
                 if alert and self.alert_system:
@@ -279,36 +287,166 @@ class EmailSecurityHandler(Message):
 
         logger.warning(f"Email quarantined: {quarantine_id} with score {threat_score}")
 
-    async def _add_warning_to_email(self, email_data: Dict):
+    async def _add_warning_to_email(self, email_data: Dict, alert: Optional[Dict] = None):
         """
         Add warning header to suspicious emails using the warning injection module.
         """
         # Determine threat level from email data or use a default
-        threat_score = email_data.get('threat_score', 0.5)  # Default to medium threat if not set
+        threat_score = email_data.get('threat_score', 0.5)
         threat_level = self.warning_injector.determine_warning_level(threat_score)
-        # Use the warning injection module to add warnings
-        warned_email = self.warning_injector.inject_warning(email_data, threat_level)
-        # Update the email_data with the warned version
-        email_data.update(warned_email)
-        logger.info(f"Added warning to suspicious email from {email_data.get('from')} - "
-                   f"Level: {warned_email.get('warning_info', {}).get('warning_level', 'UNKNOWN')}")
 
-    async def _forward_email(self, envelope):
+        # Build user-facing explanations for just-in-time guidance
+        explanations = list(email_data.get('explanations', []))
+        if not explanations:
+            if threat_score >= 0.7:
+                explanations.append('High threat score detected')
+            urls = email_data.get('urls', [])
+            if urls:
+                explanations.append(f'Found {len(urls)} URL(s) in email')
+            if email_data.get('authentication_failed'):
+                explanations.append('Sender authentication checks failed')
+            if alert and alert.get('auth_reasons'):
+                explanations.extend(alert.get('auth_reasons', [])[:2])
+
+        # The warning injector expects a generic body field.
+        # Normalize from parsed fields so injected content is actually available for forwarding.
+        normalized_body = (
+            email_data.get('body_plain')
+            or email_data.get('body_html')
+            or email_data.get('body', '')
+        )
+        payload_for_warning = {
+            **email_data,
+            'body': normalized_body,
+            'headers': {**email_data.get('headers', {})},
+        }
+        warned_email = self.warning_injector.inject_warning(
+            payload_for_warning,
+            threat_level,
+            explanations=explanations,
+        )
+
+        # Sync warning output back to parser-friendly fields used by downstream mutation and forwarding.
+        if warned_email.get('body'):
+            if email_data.get('body_plain'):
+                email_data['body_plain'] = warned_email['body']
+            elif email_data.get('body_html'):
+                email_data['body_html'] = warned_email['body']
+            else:
+                email_data['body_plain'] = warned_email['body']
+
+        email_data['subject'] = warned_email.get('subject', email_data.get('subject', ''))
+        email_data['headers'] = warned_email.get('headers', email_data.get('headers', {}))
+        email_data['modified'] = warned_email.get('modified', False)
+        email_data['modified_body'] = warned_email.get('modified_body', False)
+        email_data['warning_info'] = warned_email.get('warning_info', {})
+
+        logger.info(
+            f"Added warning to suspicious email from {email_data.get('from')} - "
+            f"Level: {email_data.get('warning_info', {}).get('warning_level', 'UNKNOWN')}"
+        )
+
+    async def _forward_email(self, envelope, email_data: Optional[Dict] = None):
         """
         Forward email to the actual mail server.
         """
         # This is a simplified version - in production you'd use proper SMTP relay
         try:
+            outgoing_content = envelope.content
+            if email_data:
+                outgoing_content = self._build_outgoing_email_content(envelope.content, email_data)
+
             # Connect to real mail server (configured in settings)
             with smtplib.SMTP(settings.email_server.smtp_server, settings.email_server.smtp_port) as server:
                 server.sendmail(
                     envelope.mail_from,
                     envelope.rcpt_tos,
-                    envelope.content
+                    outgoing_content
                 )
             logger.debug(f"Email forwarded to {envelope.rcpt_tos}")
         except Exception as e:
             logger.error(f"Failed to forward email: {e}")
+
+    def _build_outgoing_email_content(self, original_content: Any, email_data: Dict) -> bytes:
+        """
+        Apply subject/body/header mutations onto the outbound RFC822 message bytes.
+        """
+        try:
+            if isinstance(original_content, bytes):
+                original_bytes = original_content
+            elif isinstance(original_content, str):
+                original_bytes = original_content.encode('utf-8', errors='ignore')
+            else:
+                original_bytes = str(original_content).encode('utf-8', errors='ignore')
+
+            message = message_from_bytes(original_bytes, policy=default)
+
+            # Subject rewrite from warning injection + URL rewriting.
+            if email_data.get('subject'):
+                self._set_or_replace_header(message, 'Subject', email_data['subject'])
+
+            # Add security headers if present.
+            for key, value in email_data.get('headers', {}).items():
+                if key.startswith('X-Security-'):
+                    self._set_or_replace_header(message, key, str(value))
+
+            # Apply rewritten/warned body content.
+            self._apply_body_updates(
+                message,
+                plain_body=email_data.get('body_plain') or email_data.get('body'),
+                html_body=email_data.get('body_html'),
+            )
+
+            return message.as_bytes(policy=default)
+        except Exception as e:
+            logger.warning(f"Failed to apply outbound content mutations, falling back to original message: {e}")
+            if isinstance(original_content, bytes):
+                return original_content
+            if isinstance(original_content, str):
+                return original_content.encode('utf-8', errors='ignore')
+            return str(original_content).encode('utf-8', errors='ignore')
+
+    @staticmethod
+    def _set_or_replace_header(message, header_name: str, header_value: str):
+        """Safely set or replace an RFC822 header."""
+        if header_name in message:
+            message.replace_header(header_name, header_value)
+        else:
+            message[header_name] = header_value
+
+    def _apply_body_updates(self, message, plain_body: Optional[str], html_body: Optional[str]):
+        """Replace existing text/plain and text/html parts with updated content when available."""
+        if plain_body is None and html_body is None:
+            return
+
+        if not message.is_multipart():
+            charset = message.get_content_charset() or 'utf-8'
+            content_type = message.get_content_type()
+            if content_type == 'text/html' and html_body is not None:
+                message.set_content(html_body, subtype='html', charset=charset)
+            elif plain_body is not None:
+                message.set_content(plain_body, subtype='plain', charset=charset)
+            elif html_body is not None:
+                message.set_content(html_body, subtype='html', charset=charset)
+            return
+
+        plain_updated = False
+        html_updated = False
+        for part in message.walk():
+            if part.get_content_maintype() != 'text':
+                continue
+            if part.get_content_disposition() == 'attachment':
+                continue
+
+            charset = part.get_content_charset() or 'utf-8'
+            part_type = part.get_content_type()
+
+            if part_type == 'text/plain' and plain_body is not None and not plain_updated:
+                part.set_content(plain_body, subtype='plain', charset=charset)
+                plain_updated = True
+            elif part_type == 'text/html' and html_body is not None and not html_updated:
+                part.set_content(html_body, subtype='html', charset=charset)
+                html_updated = True
 
     def _get_risk_level(self, score: float) -> str:
         """Convert score to risk level"""
