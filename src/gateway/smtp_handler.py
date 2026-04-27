@@ -6,6 +6,7 @@ Acts as a proxy between mail server and employees' inboxes.
 import asyncio
 import smtplib
 import time
+import os
 from email import message_from_bytes
 from email.policy import default
 from typing import Optional, Dict, Any
@@ -523,7 +524,14 @@ async def run_gateway():
     logger.info("Initializing Email Security Gateway...")
 
     # Load model
-    model = TinyBERTForEmailSecurity()
+    configured_model_path = os.getenv("TINYBERT_MODEL_PATH", "").strip() or None
+    model = TinyBERTForEmailSecurity(model_path=configured_model_path)
+    logger.info(
+        "Gateway model loaded | backend={} | source={} | configured_path={}",
+        getattr(model, "backend", "unknown"),
+        getattr(model, "model_name", "unknown"),
+        configured_model_path or "(not set)",
+    )
 
     # Initialize threat hub
     threat_hub = ThreatIntelligenceHub()

@@ -714,3 +714,225 @@ You need to have sentencepiece or tiktoken installed to convert a slow tokenizer
 2026-04-27 05:05:10 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
 2026-04-27 05:05:10 | INFO     | src.api.main:startup_event:183 - Processor started
 2026-04-27 05:05:10 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 12:23:17 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 12:23:30 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:31 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 12:23:35 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 12:23:39 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 12:23:39 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:39 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:23:40 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-27 12:23:40 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-27 12:23:40 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:23:41 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 12:23:41 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Test subject...'
+2026-04-27 12:23:41 | INFO     | src.api.main:submit_feedback:421 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-27 12:23:41 | INFO     | src.api.main:add_to_whitelist:366 - Added to whitelist: trusted@deped.gov.ph
+2026-04-27 12:23:41 | INFO     | src.api.main:add_to_blacklist:385 - Added to blacklist: banned@example.com
+2026-04-27 12:23:41 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:345 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-27 12:23:41 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:41 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:41 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:41 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:41 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:42 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:49 | INFO     | src.models.tinybert_model:_train_transformer_quick:531 - Transformer train_quick completed
+2026-04-27 12:23:49 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:23:49 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:23:49 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:23:50 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 12:23:50 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:23:51 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:23:51 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 12:23:51 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:23:51 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:23:51 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:38 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 12:32:42 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:42 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 12:32:51 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 12:32:55 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 12:32:55 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:55 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:32:55 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-27 12:32:55 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-27 12:32:56 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:32:57 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 12:32:57 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Test subject...'
+2026-04-27 12:32:57 | INFO     | src.api.main:submit_feedback:421 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-27 12:32:57 | INFO     | src.api.main:add_to_whitelist:366 - Added to whitelist: trusted@deped.gov.ph
+2026-04-27 12:32:57 | INFO     | src.api.main:add_to_blacklist:385 - Added to blacklist: banned@example.com
+2026-04-27 12:32:57 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:345 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-27 12:32:57 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:57 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:57 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:57 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:57 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:32:57 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:33:04 | INFO     | src.models.tinybert_model:_train_transformer_quick:531 - Transformer train_quick completed
+2026-04-27 12:33:04 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:33:05 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:33:05 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:33:05 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 12:33:05 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:33:06 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:33:06 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 12:33:06 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:33:06 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:33:07 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:39:29 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 12:39:54 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:39:54 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 12:39:58 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 12:40:02 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 12:40:02 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:02 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:40:02 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Meeting Agenda for Tomorrow...'
+2026-04-27 12:40:02 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='URGENT: Your GCash Account Will Be Suspended...'
+2026-04-27 12:40:03 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:40:03 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 12:40:03 | INFO     | src.api.main:check_email:220 - Email check request from testclient: subject='Test subject...'
+2026-04-27 12:40:03 | INFO     | src.api.main:submit_feedback:421 - Feedback for test_job_123: is_threat=True, notes=Test
+2026-04-27 12:40:03 | INFO     | src.api.main:add_to_whitelist:366 - Added to whitelist: trusted@deped.gov.ph
+2026-04-27 12:40:03 | INFO     | src.api.main:add_to_blacklist:385 - Added to blacklist: banned@example.com
+2026-04-27 12:40:03 | INFO     | src.gateway.smtp_handler:_add_warning_to_email:345 - Added warning to suspicious email from attacker@example.net - Level: HIGH
+2026-04-27 12:40:03 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:04 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:04 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:04 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:04 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:04 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:11 | INFO     | src.models.tinybert_model:_train_transformer_quick:531 - Transformer train_quick completed
+2026-04-27 12:40:11 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:40:12 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:40:12 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:40:12 | ERROR    | src.features.external_intelligence:check_domain:285 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-04-27 12:40:12 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:40:13 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 12:40:13 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 12:40:13 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:40:13 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 12:40:14 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 05:13:24 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 05:13:31 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 05:13:31 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 05:13:31 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 05:13:31 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 05:13:31 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 05:13:31 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 05:13:31 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 05:13:31 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 05:13:31 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 05:18:25 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 05:18:30 | INFO     | __main__:authenticate:485 - User 'admin' logged in successfully
+2026-04-27 05:21:47 | INFO     | src.api.main:check_email:220 - Email check request from 172.19.0.4: subject='Meeting Agenda - Project Review...'
+2026-04-27 05:21:47 | INFO     | src.gateway.queue_manager:_worker:153 - Worker 0 processing job job_1777267307.49438_-1219167891859637512
+2026-04-27 05:21:51 | INFO     | src.api.main:check_email:220 - Email check request from 172.19.0.4: subject='URGENT: Your Account Will Be Suspended...'
+2026-04-27 05:21:52 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:21:53 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 05:21:53 | INFO     | src.gateway.queue_manager:_worker:153 - Worker 0 processing job job_1777267313.165271_-4931832568997442073
+2026-04-27 05:21:57 | INFO     | src.api.main:check_email:220 - Email check request from 172.19.0.4: subject='Your Package Delivery Update...'
+2026-04-27 05:21:57 | ERROR    | src.features.external_intelligence:check_url:83 - VirusTotal API error: 404
+2026-04-27 05:21:57 | ERROR    | src.features.external_intelligence:check_url:187 - Google SB API error: 400
+2026-04-27 05:21:58 | INFO     | src.gateway.queue_manager:_worker:153 - Worker 0 processing job job_1777267318.030827_-654736255445227677
+2026-04-27 05:39:27 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 05:39:27 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 18:17:54 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 18:18:32 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 18:18:33 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 18:19:53 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 18:20:35 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 18:20:41 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 18:20:47 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 18:20:47 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 10:49:33 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 10:49:39 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 10:49:39 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 10:49:40 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 10:49:40 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 10:49:40 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 10:49:40 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 10:49:40 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 10:49:40 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 10:49:40 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 10:50:29 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 10:51:33 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 10:51:33 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 10:51:35 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 10:51:38 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 10:51:38 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 10:51:39 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 10:51:39 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 10:51:39 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 10:51:39 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 10:51:39 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 10:51:39 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 10:51:39 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 10:52:11 | INFO     | __main__:authenticate:538 - User 'admin' logged in successfully
+2026-04-27 11:02:12 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 11:02:12 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 11:02:16 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 11:02:23 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 11:02:23 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 11:02:23 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 11:02:23 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 11:02:23 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 11:02:23 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 11:02:23 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 11:02:23 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 11:02:23 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 11:03:13 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 11:03:13 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 11:03:17 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 11:03:24 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 11:03:24 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 11:03:25 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 11:03:25 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 11:03:25 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 11:03:25 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 11:03:25 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 11:03:25 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 11:03:25 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 19:03:56 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 19:04:03 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 19:04:04 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 11:04:16 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 11:04:16 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 11:04:20 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 11:04:27 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 11:04:27 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 11:04:27 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 11:04:27 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 11:04:27 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 11:04:27 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 11:04:27 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 11:04:27 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 11:04:27 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 11:40:30 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 11:40:30 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 11:40:39 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 11:40:43 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 11:40:44 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 11:40:44 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 11:40:45 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 11:40:45 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 11:40:45 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 11:40:45 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 11:40:45 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 11:40:45 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 11:40:45 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 11:48:36 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 11:48:41 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 11:48:41 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 11:48:42 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 11:48:42 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 11:48:42 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 11:48:42 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 11:48:42 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 11:48:42 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 11:48:42 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 11:48:43 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 11:48:47 | INFO     | __main__:authenticate:580 - User 'admin' logged in successfully
+2026-04-27 11:50:56 | INFO     | __main__:authenticate:580 - User 'admin' logged in successfully
+2026-04-27 12:09:51 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 12:09:51 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped

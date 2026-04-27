@@ -27,7 +27,14 @@ def get_model() -> TinyBERTForEmailSecurity:
     global _model
     if _model is None:
         try:
-            _model = TinyBERTForEmailSecurity()
+            configured_model_path = os.getenv("TINYBERT_MODEL_PATH", "").strip() or None
+            _model = TinyBERTForEmailSecurity(model_path=configured_model_path)
+            logger.info(
+                "Dependency model loaded | backend={} | source={} | configured_path={}",
+                getattr(_model, "backend", "unknown"),
+                getattr(_model, "model_name", "unknown"),
+                configured_model_path or "(not set)",
+            )
         except Exception as e:
             logger.error(f"Failed to load model on demand: {e}")
             raise HTTPException(status_code=503, detail="Model not available")
