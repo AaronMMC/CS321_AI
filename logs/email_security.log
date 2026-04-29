@@ -936,3 +936,20 @@ You need to have sentencepiece or tiktoken installed to convert a slow tokenizer
 2026-04-27 11:50:56 | INFO     | __main__:authenticate:580 - User 'admin' logged in successfully
 2026-04-27 12:09:51 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
 2026-04-27 12:09:51 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 12:09:53 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 12:09:58 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-27 12:09:58 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-27 12:09:59 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved/real_tinybert_selected_dataset on cpu
+2026-04-27 12:09:59 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved/real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-27 12:09:59 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-27 12:09:59 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-27 12:09:59 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-27 12:09:59 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-27 12:09:59 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-27 12:12:29 | INFO     | src.api.main:shutdown_event:192 - Shutting down API...
+2026-04-27 12:12:29 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-04-27 23:25:08 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-27 23:25:11 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-27 23:25:11 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-29 11:38:49 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-29 11:39:00 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
