@@ -953,3 +953,18 @@ You need to have sentencepiece or tiktoken installed to convert a slow tokenizer
 2026-04-27 23:25:11 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
 2026-04-29 11:38:49 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
 2026-04-29 11:39:00 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-29 11:39:14 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-29 11:39:36 | INFO     | src.api.main:<module>:45 - Configuring CORS for origins: ['http://localhost:8501', 'http://localhost:8000']
+2026-04-29 11:39:36 | INFO     | src.api.main:startup_event:157 - Starting Email Security Gateway API...
+2026-04-29 11:39:37 | INFO     | src.models.tinybert_model:_try_load_transformer:189 - Initialized transformer model backend from models_saved\real_tinybert_selected_dataset on cpu
+2026-04-29 11:39:37 | INFO     | src.api.main:startup_event:163 - Model loaded successfully | backend=transformer | source=models_saved\real_tinybert_selected_dataset | configured_path=models_saved/real_tinybert_selected_dataset
+2026-04-29 11:39:37 | INFO     | src.features.external_intelligence:__init__:315 - Threat Intelligence Hub initialized
+2026-04-29 11:39:37 | INFO     | src.api.main:startup_event:183 - Processor started
+2026-04-29 11:39:37 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-04-29 11:39:37 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-04-29 11:39:37 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-04-29 11:39:41 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-04-29 11:39:45 | INFO     | __main__:authenticate:905 - User 'admin' logged in successfully
+2026-04-29 11:43:35 | WARNING  | __main__:authenticate:908 - Failed login attempt for user 'admin'
+2026-04-29 11:43:37 | INFO     | __main__:authenticate:905 - User 'admin' logged in successfully
+2026-04-29 11:45:33 | INFO     | __main__:authenticate:905 - User 'admin' logged in successfully
