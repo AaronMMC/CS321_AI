@@ -65,3 +65,23 @@
 2026-04-23 14:51:17 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
 2026-04-23 14:51:45 | INFO     | src.api.main:shutdown_event:130 - Shutting down API...
 2026-04-23 14:51:45 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-05-02 15:23:43 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 15:23:44 | INFO     | src.api.main:startup_event:122 - Starting Email Security Gateway API...
+2026-05-02 15:23:44 | INFO     | src.models.scratch_transformer:load:123 - Tokenizer loaded ← models_saved\tinybert_enron_spam\tokenizer.json (155 tokens)
+2026-05-02 15:23:44 | INFO     | src.models.scratch_transformer:__init__:216 - ScratchTransformerClassifier initialised (vocab=155, embed=128, layers=2, heads=4) — 425,026 parameters — ALL WEIGHTS RANDOM
+2026-05-02 15:23:44 | INFO     | src.models.scratch_transformer:load:505 - Model loaded ← models_saved\tinybert_enron_spam
+2026-05-02 15:23:44 | INFO     | src.api.main:startup_event:128 - Model loaded from models_saved\tinybert_enron_spam
+2026-05-02 15:23:44 | WARNING  | src.features.external_intelligence:__init__:29 - VirusTotal API key not configured - will use mock data
+2026-05-02 15:23:44 | WARNING  | src.features.external_intelligence:__init__:140 - Google Safe Browsing API key not configured
+2026-05-02 15:23:44 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-05-02 15:23:44 | INFO     | src.api.main:startup_event:145 - Async processor started
+2026-05-02 15:23:44 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-05-02 15:23:44 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-05-02 15:23:44 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-05-02 15:23:52 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 15:26:49 | INFO     | src.api.main:shutdown_event:150 - Shutting down...
+2026-05-02 15:26:49 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-05-02 21:27:35 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 21:27:38 | INFO     | src.models.scratch_transformer:build_vocab:77 - Vocabulary built: 30,000 tokens (min_freq=2, max_vocab=30000)
+2026-05-02 21:27:38 | INFO     | src.models.scratch_transformer:__init__:216 - ScratchTransformerClassifier initialised (vocab=30,000, embed=256, layers=4, heads=8) — 9,822,082 parameters — ALL WEIGHTS RANDOM
+2026-05-02 21:27:42 | INFO     | src.models.scratch_transformer:train_quick:411 - Training from scratch — 28,599 samples, 5 epochs, device=cpu

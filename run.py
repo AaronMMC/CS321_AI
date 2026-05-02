@@ -2,16 +2,19 @@
 """
 run.py — One-file launcher for the Email Security Gateway
 =========================================================
-Run this from the project root:
+Just run this from the project root and it handles everything:
 
-    python run.py              # start API + Dashboard (default)
-    python run.py --all        # start API + Dashboard + SMTP Gateway
+    python run.py              # auto-downloads data if needed, trains if needed,
+                               # then starts API + Dashboard
+
+Optional flags:
+    python run.py --all        # API + Dashboard + SMTP Gateway
     python run.py --api        # API only
     python run.py --dashboard  # Dashboard only
     python run.py --gateway    # SMTP gateway only
-    python run.py --train      # quick-train the model on synthetic data
-    python run.py --download   # download real datasets then train
-    python run.py --test       # run the system self-test
+    python run.py --retrain    # force re-download and retrain even if model exists
+    python run.py --test       # run system self-test
+    python run.py --sample 0.5 # fraction of data to use for training (default: 0.2)
 
 Requirements
 ------------
@@ -19,7 +22,6 @@ Requirements
 """
 
 import argparse
-import asyncio
 import os
 import signal
 import subprocess
@@ -49,6 +51,10 @@ def banner(title):
     print(f"{'='*60}{RESET}")
 
 
+# ── Model save path ───────────────────────────────────────────────────────────
+MODEL_SAVE_PATH = "models_saved/email_security_model"
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 #  PRE-FLIGHT CHECKS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -62,19 +68,18 @@ def check_python():
 
 
 def check_dependencies():
-    """Check that the critical packages can be imported."""
     required = [
-        ("fastapi",    "fastapi"),
-        ("uvicorn",    "uvicorn"),
-        ("streamlit",  "streamlit"),
-        ("torch",      "torch"),
-        ("loguru",     "loguru"),
-        ("dotenv",     "python-dotenv"),
-        ("pydantic",   "pydantic"),
-        ("aiosmtpd",   "aiosmtpd"),
-        ("sklearn",    "scikit-learn"),
-        ("numpy",      "numpy"),
-        ("pandas",     "pandas"),
+        ("fastapi",   "fastapi"),
+        ("uvicorn",   "uvicorn"),
+        ("streamlit", "streamlit"),
+        ("torch",     "torch"),
+        ("loguru",    "loguru"),
+        ("dotenv",    "python-dotenv"),
+        ("pydantic",  "pydantic"),
+        ("aiosmtpd",  "aiosmtpd"),
+        ("sklearn",   "scikit-learn"),
+        ("numpy",     "numpy"),
+        ("pandas",    "pandas"),
     ]
     missing = []
     for mod, pkg in required:
@@ -93,10 +98,11 @@ def check_dependencies():
 
 
 def ensure_directories():
-    """Create runtime directories that must exist."""
-    dirs = ["logs", "models_saved", "quarantine", "cache",
-            "data/raw", "data/processed",
-            "cache/virustotal", "cache/googlesb", "cache/whois", "cache/patterns"]
+    dirs = [
+        "logs", "models_saved", "quarantine", "cache",
+        "data/raw", "data/processed",
+        "cache/virustotal", "cache/googlesb", "cache/whois", "cache/patterns",
+    ]
     for d in dirs:
         Path(d).mkdir(parents=True, exist_ok=True)
     ok("Runtime directories ready")
@@ -117,96 +123,101 @@ def ensure_env_file():
             "IMAP_SERVER=localhost\n"
             "IMAP_PORT=143\n"
             "DATABASE_URL=sqlite:///email_security.db\n"
-            "MODEL_PATH=models_saved/bert_phishing_detector_v1\n"
-            "TINYBERT_MODEL_PATH=models_saved/tinybert_enron_spam\n"
+            f"TINYBERT_MODEL_PATH={MODEL_SAVE_PATH}\n"
             "ADMIN_EMAIL=admin@prototype.local\n"
             "LOG_LEVEL=INFO\n"
             "LOG_FILE=logs/email_security.log\n"
         )
-        warn(".env not found – created a default one. Edit it to add API keys.")
+        warn(".env not found — created a default one. Edit it to add API keys.")
     else:
         ok(".env file present")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  MODEL BOOTSTRAPPING
+#  DATA + TRAINING
 # ─────────────────────────────────────────────────────────────────────────────
 
 def model_exists() -> bool:
-    for p in [
-        "models_saved/tinybert_enron_spam/model_weights.pt",
-        "models_saved/bert_phishing_detector_v1/model_weights.pt",
-    ]:
-        if Path(p).exists():
-            return True
-    return False
+    return Path(f"{MODEL_SAVE_PATH}/model_weights.pt").exists()
 
 
-def quick_train():
-    """Train on the built-in synthetic dataset (no internet needed)."""
-    banner("Quick-Training Model (synthetic data)")
-    from src.models.scratch_transformer import ScratchModelForEmailSecurity, create_mini_dataset_for_quick_training
-
-    texts, labels = create_mini_dataset_for_quick_training()
-    info(f"Loaded {len(texts)} synthetic training samples")
-
-    model = ScratchModelForEmailSecurity(embed_dim=128, num_heads=4, num_layers=2)
-    model.build_tokenizer(texts)
-
-    from sklearn.model_selection import train_test_split
-    train_t, val_t, train_l, val_l = train_test_split(
-        texts, labels, test_size=0.2, random_state=42, stratify=labels
-    )
-
-    history = model.train_quick(
-        train_t, train_l, val_t, val_l,
-        epochs=5, batch_size=16, learning_rate=3e-4,
-    )
-    save_path = "models_saved/tinybert_enron_spam"
-    model.save(save_path)
-    ok(f"Model saved → {save_path}")
-    final_loss = history["train_loss"][-1]
-    ok(f"Training complete – final loss: {final_loss:.4f}")
+def training_data_exists() -> bool:
+    return Path("data/processed/training_data.csv").exists()
 
 
-def download_and_train(sample_frac: float = 0.2):
-    """Download real datasets then train."""
-    banner("Downloading Datasets")
+def download_data(sample_frac: float):
+    """Download public phishing/spam datasets into data/."""
+    banner("Step 1 of 2 — Downloading Training Data")
     from scripts.download_datasets import DatasetDownloader
     dl = DatasetDownloader()
-    dl.download_all()
+    results = dl.download_all()
+    failed = [k for k, v in results.items() if not v]
+    if failed:
+        warn(f"Some datasets failed to download: {failed}")
+        warn("Continuing with whatever was downloaded successfully.")
     path = dl.create_training_data(sample_frac)
-    ok(f"Training data at {path}")
+    ok(f"Training data ready at {path}")
+    return path
 
-    banner("Training on Real Data")
+
+def train_model(data_path: str):
+    """Train the scratch Transformer on data at data_path."""
+    banner("Step 2 of 2 — Training Model from Scratch")
     import pandas as pd
-    df = pd.read_csv(path).dropna(subset=["text", "label"])
-    texts  = df["text"].tolist()
-    labels = df["label"].astype(int).tolist()
-    info(f"{len(texts)} samples loaded")
-
     from src.models.scratch_transformer import ScratchModelForEmailSecurity
     from sklearn.model_selection import train_test_split
+
+    df = pd.read_csv(data_path).dropna(subset=["text", "label"])
+    if len(df) == 0:
+        err("Training data file is empty. Re-run with --retrain to re-download.")
+        sys.exit(1)
+
+    texts  = df["text"].tolist()
+    labels = df["label"].astype(int).tolist()
+    info(f"{len(texts):,} samples loaded for training")
 
     train_t, val_t, train_l, val_l = train_test_split(
         texts, labels, test_size=0.15, random_state=42, stratify=labels
     )
+    info(f"Train: {len(train_t):,}  Val: {len(val_t):,}")
 
     model = ScratchModelForEmailSecurity()
     model.build_tokenizer(train_t)
     model.train_quick(train_t, train_l, val_t, val_l, epochs=5)
-    model.save("models_saved/tinybert_enron_spam")
-    ok("Training finished and model saved.")
+    model.save(MODEL_SAVE_PATH)
+    ok(f"Model saved → {MODEL_SAVE_PATH}")
+
+
+def ensure_model_ready(sample_frac: float, force_retrain: bool = False):
+    """
+    Full pipeline: download data if missing, train if missing.
+    Skips steps that are already done unless force_retrain=True.
+    """
+    if force_retrain:
+        info("--retrain flag set — re-downloading data and retraining.")
+
+    # Step 1: data
+    if force_retrain or not training_data_exists():
+        data_path = download_data(sample_frac)
+    else:
+        data_path = "data/processed/training_data.csv"
+        ok("Training data already present — skipping download")
+
+    # Step 2: model
+    if force_retrain or not model_exists():
+        train_model(data_path)
+    else:
+        ok(f"Trained model already present at {MODEL_SAVE_PATH} — skipping training")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  SERVICE LAUNCHERS
 # ─────────────────────────────────────────────────────────────────────────────
 
-_procs: list[subprocess.Popen] = []
+_procs: list = []
 
 
-def _spawn(cmd: list[str], label: str) -> subprocess.Popen:
+def _spawn(cmd: list, label: str) -> subprocess.Popen:
     info(f"Starting {label} …")
     proc = subprocess.Popen(
         cmd,
@@ -234,15 +245,10 @@ def start_dashboard() -> subprocess.Popen:
     )
 
 
-async def _run_gateway():
-    from src.gateway.proxy_server import run_proxy
-    await run_proxy()
-
-
-def start_gateway_subprocess() -> subprocess.Popen:
+def start_gateway() -> subprocess.Popen:
     return _spawn(
         [sys.executable, "-c",
-         "import asyncio; from src.gateway.proxy_server import run_proxy; asyncio.run(run_proxy())"],
+         "import asyncio; from src.gateway.smtp_handler import run_gateway; asyncio.run(run_gateway())"],
         "SMTP Gateway (port 10025)",
     )
 
@@ -258,7 +264,7 @@ def _shutdown(signum, frame):
 
 
 def wait_for_api(timeout: int = 30):
-    import urllib.request, urllib.error
+    import urllib.request
     deadline = time.time() + timeout
     while time.time() < deadline:
         try:
@@ -267,7 +273,7 @@ def wait_for_api(timeout: int = 30):
             return True
         except Exception:
             time.sleep(1)
-    warn("API did not respond within timeout – check logs/api.log")
+    warn("API did not respond within timeout — check logs/")
     return False
 
 
@@ -277,6 +283,11 @@ def wait_for_api(timeout: int = 30):
 
 def run_self_test():
     banner("System Self-Test")
+
+    if not model_exists():
+        err("No trained model found — run without --test first to train.")
+        sys.exit(1)
+
     passed = 0
     failed = 0
 
@@ -290,18 +301,17 @@ def run_self_test():
             err(f"{name}: {exc}")
             failed += 1
 
-    # Model
     def _model():
-        from src.models.tinybert_model import TinyBERTForEmailSecurity
-        m = TinyBERTForEmailSecurity(use_gpu=False)
+        from src.models.scratch_transformer import ScratchModelForEmailSecurity
+        m = ScratchModelForEmailSecurity.load(MODEL_SAVE_PATH)
         r = m.predict("Meeting at 10am tomorrow")
         assert isinstance(r, dict) and "threat_score" in r
-        r2 = m.predict("URGENT click here to verify your GCash account now")
-        assert isinstance(r2, dict)
+        assert 0.0 <= r["threat_score"] <= 1.0
+        r2 = m.predict("URGENT click here to verify your account now")
+        assert isinstance(r2, dict) and "threat_score" in r2
 
     t("Model load + predict", _model)
 
-    # Threat hub
     def _threat():
         from src.features.external_intelligence import ThreatIntelligenceHub
         hub = ThreatIntelligenceHub()
@@ -310,7 +320,6 @@ def run_self_test():
 
     t("Threat Intelligence Hub", _threat)
 
-    # Email parser
     def _parser():
         from src.gateway.email_parser import EmailParser
         p = EmailParser()
@@ -320,7 +329,6 @@ def run_self_test():
 
     t("Email Parser", _parser)
 
-    # Warning injector
     def _warning():
         from src.features.warning_injection import EmailWarningInjector, WarningLevel
         inj = EmailWarningInjector()
@@ -334,7 +342,6 @@ def run_self_test():
 
     t("Warning Injection", _warning)
 
-    # URL features
     def _url():
         from src.features.url_features import URLFeatureExtractor
         ext = URLFeatureExtractor()
@@ -343,7 +350,6 @@ def run_self_test():
 
     t("URL Feature Extractor", _url)
 
-    # Performance metrics
     def _metrics():
         from src.features.performance_metrics import PerformanceMetrics
         m = PerformanceMetrics()
@@ -368,58 +374,44 @@ def run_self_test():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Email Security Gateway – one-file launcher",
+        description="Email Security Gateway – launcher",
         formatter_class=argparse.RawTextHelpFormatter,
     )
-    parser.add_argument("--all",       action="store_true", help="API + Dashboard + SMTP gateway")
-    parser.add_argument("--api",       action="store_true", help="API only (port 8000)")
-    parser.add_argument("--dashboard", action="store_true", help="Dashboard only (port 8501)")
-    parser.add_argument("--gateway",   action="store_true", help="SMTP gateway only (port 10025)")
-    parser.add_argument("--train",     action="store_true", help="Quick-train model on synthetic data")
-    parser.add_argument("--download",  action="store_true", help="Download real datasets then train")
-    parser.add_argument("--test",      action="store_true", help="Run system self-test")
-    parser.add_argument("--sample",    type=float, default=0.2,
-                        help="Fraction of real data to use for training (default: 0.2)")
+    parser.add_argument("--all",      action="store_true", help="API + Dashboard + SMTP gateway")
+    parser.add_argument("--api",      action="store_true", help="API only (port 8000)")
+    parser.add_argument("--dashboard",action="store_true", help="Dashboard only (port 8501)")
+    parser.add_argument("--gateway",  action="store_true", help="SMTP gateway only (port 10025)")
+    parser.add_argument("--retrain",  action="store_true", help="Force re-download data and retrain even if model exists")
+    parser.add_argument("--test",     action="store_true", help="Run system self-test")
+    parser.add_argument("--sample",   type=float, default=0.2,
+                        help="Fraction of data to use for training (default: 0.2)")
     args = parser.parse_args()
 
     banner("Email Security Gateway")
 
-    # Pre-flight
+    # Pre-flight always runs
     check_python()
     check_dependencies()
     ensure_directories()
     ensure_env_file()
 
-    # ── Training mode ────────────────────────────────────────────────────────
-    if args.train:
-        quick_train()
-        return
-
-    if args.download:
-        download_and_train(args.sample)
-        return
-
+    # ── Self-test mode ───────────────────────────────────────────────────────
     if args.test:
-        # Auto-bootstrap model if needed before test
-        if not model_exists():
-            warn("No trained model found – running quick-train first …")
-            quick_train()
         run_self_test()
         return
 
-    # ── Service mode ─────────────────────────────────────────────────────────
-    # Bootstrap model if needed
-    if not model_exists():
-        warn("No trained model found. Auto-training on synthetic data …")
-        warn("(Run  python run.py --download  for better accuracy with real data)")
-        quick_train()
+    # ── Auto-setup: download data + train if anything is missing ─────────────
+    # This runs automatically on first launch (or when --retrain is passed).
+    # Subsequent launches skip it since both data and model already exist.
+    ensure_model_ready(sample_frac=args.sample, force_retrain=args.retrain)
 
+    # ── Start services ───────────────────────────────────────────────────────
     signal.signal(signal.SIGINT,  _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)
 
-    start_api_flag       = args.api or args.all or not any([args.api, args.dashboard, args.gateway, args.all])
-    start_dash_flag      = args.dashboard or args.all or not any([args.api, args.dashboard, args.gateway, args.all])
-    start_gateway_flag   = args.gateway or args.all
+    start_api_flag     = args.api or args.all or not any([args.api, args.dashboard, args.gateway, args.all])
+    start_dash_flag    = args.dashboard or args.all or not any([args.api, args.dashboard, args.gateway, args.all])
+    start_gateway_flag = args.gateway or args.all
 
     launched = []
 
@@ -433,7 +425,7 @@ def main():
         p = start_dashboard()
         launched.append(("Dashboard", p, "http://localhost:8501"))
     if start_gateway_flag:
-        p = start_gateway_subprocess()
+        p = start_gateway()
         launched.append(("Gateway",   p, "localhost:10025 (SMTP)"))
 
     if not launched:
@@ -443,10 +435,8 @@ def main():
     banner("All services started")
     for name, _, url in launched:
         print(f"  {GREEN}{name:<12}{RESET}  {url}")
-
     print(f"\n  {YELLOW}Press Ctrl+C to stop all services{RESET}\n")
 
-    # Keep alive – forward exit codes
     try:
         while True:
             for name, proc, _ in launched:
