@@ -1,39 +1,27 @@
 """
-Main FastAPI application for the Email Security Gateway.
+FastAPI application for the Email Security Gateway.
 
-CHANGES FROM ORIGINAL:
-  1. /api/v1/check-email now returns auth (SPF/DKIM/DMARC) and intel
-     (VirusTotal, WHOIS, Google SB) fields in addition to threat_score.
-  2. New GET /api/v1/quarantine endpoint reads the quarantine/ folder on disk
-     and returns the metadata JSON files written by smtp_handler.
-  3. EmailCheckResponse schema updated with optional intel and auth fields.
-  4. Removed the duplicate email_queue.enqueue() that was processing every
-     synchronous /check-email request a second time in the background.
-  5. _get_risk_level() deduplicated — single copy used by all routes.
+Merged from: main.py + routes.py + schemas.py + dependencies.py
+Those four files served a single app with no external consumers —
+splitting them added indirection for no benefit.
 """
 
-import asyncio
-import json as _json
+from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field, field_validator, model_validator
+from typing import List, Optional
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-
+import re
 import uvicorn
-from fastapi import BackgroundTasks, FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
-from pydantic import BaseModel, Field
+import asyncio
 
-from src.features.authentication_verification import verify_email_authentication
+from src.models.scratch_transformer import ScratchModelForEmailSecurity
 from src.features.external_intelligence import ThreatIntelligenceHub
 from src.gateway.email_parser import EmailParser
-from src.gateway.queue_manager import AsyncProcessor, EmailQueue
-from src.models.tinybert_model import TinyBERTForEmailSecurity
+from src.gateway.queue_manager import EmailQueue, AsyncProcessor
 from src.utils.config import settings
-
-# ---------------------------------------------------------------------------
-# App setup
-# ---------------------------------------------------------------------------
 
 app = FastAPI(
     title="Email Security Gateway API",
@@ -49,25 +37,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Global singletons (initialised in startup event)
-_model: Optional[TinyBERTForEmailSecurity] = None
-_threat_hub: Optional[ThreatIntelligenceHub] = None
-_email_queue: Optional[EmailQueue] = None
-_processor: Optional[AsyncProcessor] = None
-_email_parser = EmailParser()
+# ── Globals ────────────────────────────────────────────────────────────────────
+model: Optional[ScratchModelForEmailSecurity] = None
+threat_hub: Optional[ThreatIntelligenceHub] = None
+email_queue: Optional[EmailQueue] = None
+processor: Optional[AsyncProcessor] = None
+email_parser = EmailParser()
 
 
-# ---------------------------------------------------------------------------
-# Pydantic schemas
-# ---------------------------------------------------------------------------
-
+# ── Schemas ────────────────────────────────────────────────────────────────────
 
 class EmailCheckRequest(BaseModel):
-    subject: str
-    body: str
+    subject: str = Field(..., min_length=1, max_length=500)
+    body: str = Field(..., min_length=1)
     from_email: Optional[str] = None
     to_email: Optional[str] = None
     urls: Optional[List[str]] = None
+
+    @field_validator("subject", "body")
+    @classmethod
+    def not_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Field cannot be empty")
+        return v.strip()
 
 
 class EmailCheckResponse(BaseModel):
@@ -76,10 +68,6 @@ class EmailCheckResponse(BaseModel):
     explanations: List[str]
     timestamp: datetime
     job_id: Optional[str] = None
-    # NEW — threat-intelligence breakdown shown on the admin dashboard card
-    intel: Optional[Dict[str, Any]] = None
-    # NEW — SPF / DKIM / DMARC results
-    auth: Optional[Dict[str, Any]] = None
 
 
 class AlertResponse(BaseModel):
@@ -96,152 +84,97 @@ class AlertResponse(BaseModel):
 class WhitelistEntry(BaseModel):
     email: Optional[str] = None
     domain: Optional[str] = None
-    reason: str
+    reason: str = Field(..., min_length=3)
     added_by: str
-    timestamp: datetime = Field(default_factory=datetime.now)
+
+    @model_validator(mode="after")
+    def require_one(self) -> "WhitelistEntry":
+        if not self.email and not self.domain:
+            raise ValueError("Provide at least one of: email, domain")
+        return self
 
 
 class BlacklistEntry(BaseModel):
     email: Optional[str] = None
     domain: Optional[str] = None
-    reason: str
+    reason: str = Field(..., min_length=3)
     added_by: str
-    timestamp: datetime = Field(default_factory=datetime.now)
+
+    @model_validator(mode="after")
+    def require_one(self) -> "BlacklistEntry":
+        if not self.email and not self.domain:
+            raise ValueError("Provide at least one of: email, domain")
+        return self
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+class FeedbackRequest(BaseModel):
+    job_id: str
+    is_threat: bool
+    admin_notes: Optional[str] = None
 
 
-def _get_risk_level(score: float) -> str:
-    if score >= 0.80:
-        return "CRITICAL"
-    if score >= 0.60:
-        return "HIGH"
-    if score >= 0.40:
-        return "MEDIUM"
-    if score >= 0.20:
-        return "LOW"
-    return "SAFE"
-
-
-def _build_intel(urls: List[str], threat_hub: ThreatIntelligenceHub) -> Dict[str, Any]:
-    """
-    Query VirusTotal, WHOIS, and Google Safe Browsing for the first URL
-    found in the email.  Returns a flat dict suitable for JSON serialisation.
-    """
-    if not urls:
-        return {}
-
-    url = urls[0]
-    intel: Dict[str, Any] = {"url_checked": url}
-
-    try:
-        vt = threat_hub.vt.check_url(url)
-        intel["virustotal_score"] = round(vt.get("score", 0.0), 3)
-        total = vt.get("total", 68)
-        malicious = vt.get("malicious", 0)
-        intel["virustotal_flags"] = f"{malicious}/{total} flags"
-    except Exception:
-        intel["virustotal_flags"] = "unavailable"
-
-    try:
-        domain = threat_hub.url_validator.extract_domain(url)
-        if domain:
-            whois_r = threat_hub.whois.check_domain(domain)
-            age = whois_r.get("age_days")
-            intel["domain_age_days"] = age
-            intel["domain_age_label"] = (
-                f"{age} days old" if age is not None else "unknown"
-            )
-            intel["registrar"] = whois_r.get("registrar", "unknown")
-    except Exception:
-        intel["domain_age_label"] = "unavailable"
-
-    try:
-        gsb = threat_hub.gsb.check_url(url)
-        threat_types = gsb.get("threat_types", [])
-        intel["google_safe_browsing"] = (
-            ", ".join(threat_types) if threat_types else "Clean"
-        )
-    except Exception:
-        intel["google_safe_browsing"] = "unavailable"
-
-    return intel
-
-
-def _build_auth(from_email: Optional[str]) -> Dict[str, Any]:
-    """
-    Run SPF / DKIM / DMARC checks for the sender domain.
-    Returns a simplified dict for the API response.
-    """
-    if not from_email or "@" not in from_email:
-        return {}
-
-    domain = from_email.split("@")[1]
-    try:
-        result = verify_email_authentication({
-            "from_domain": domain,
-            "from": from_email,
-            "headers": {},
-            "body_raw": b"",
-            "sender_ip": "127.0.0.1",
-        })
-        spf = result.get("spf", {})
-        dkim = result.get("dkim", {})
-        dmarc = result.get("dmarc", {})
-        return {
-            "passed": result.get("passed", False),
-            "score": round(result.get("score", 0.0), 3),
-            "spf": "Pass" if spf.get("passed") else "Fail",
-            "dkim": "Pass" if dkim.get("passed") else "Fail",
-            "dmarc": f"{dmarc.get('policy', 'unknown').capitalize()} policy — "
-                     + ("pass" if dmarc.get("passed") else "fail"),
-            "reasons": result.get("reasons", []),
-        }
-    except Exception as exc:
-        logger.warning(f"Auth check failed for {domain}: {exc}")
-        return {"passed": False, "score": 0.0, "error": str(exc)}
-
-
-# ---------------------------------------------------------------------------
-# Startup / shutdown
-# ---------------------------------------------------------------------------
-
+# ── Startup / shutdown ─────────────────────────────────────────────────────────
 
 @app.on_event("startup")
 async def startup_event():
-    global _model, _threat_hub, _email_queue, _processor
+    global model, threat_hub, email_queue, processor
 
-    logger.info("Starting Email Security Gateway API…")
+    logger.info("Starting Email Security Gateway API...")
 
-    try:
-        _model = TinyBERTForEmailSecurity()
-        logger.info("Model loaded successfully")
-    except Exception as exc:
-        logger.error(f"Failed to load model: {exc}")
+    saved = Path(str(settings.model.tinybert_path))
+    if saved.exists():
+        try:
+            model = ScratchModelForEmailSecurity.load(str(saved))
+            logger.info(f"Model loaded from {saved}")
+        except Exception as e:
+            logger.error(f"Failed to load model: {e}")
+            model = None
+    else:
+        logger.warning(
+            f"No trained model found at '{saved}'. "
+            "Prediction endpoints will return 503 until a model is trained.\n"
+            "Run: python scripts/download_datasets.py --all  then  python scripts/train_model.py"
+        )
 
-    _threat_hub = ThreatIntelligenceHub()
-    _email_queue = EmailQueue()
+    threat_hub = ThreatIntelligenceHub()
+    email_queue = EmailQueue()
 
-    if _model:
-        _processor = AsyncProcessor(_email_queue, _model, _threat_hub, num_workers=2)
-        asyncio.create_task(_processor.start())
-        logger.info("Async processor started (2 workers)")
+    if model:
+        processor = AsyncProcessor(email_queue, model, threat_hub, num_workers=2)
+        asyncio.create_task(processor.start())
+        logger.info("Async processor started")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    logger.info("Shutting down API…")
-    if _processor:
-        await _processor.stop()
+    logger.info("Shutting down...")
+    if processor:
+        await processor.stop()
 
 
-# ---------------------------------------------------------------------------
-# Routes — health
-# ---------------------------------------------------------------------------
+# ── Helper ─────────────────────────────────────────────────────────────────────
 
+def _risk_level(score: float) -> str:
+    if score >= 0.8: return "CRITICAL"
+    if score >= 0.6: return "HIGH"
+    if score >= 0.4: return "MEDIUM"
+    if score >= 0.2: return "LOW"
+    return "SAFE"
+
+
+def _require_model():
+    if not model:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                f"Model not loaded. Train one first:\n"
+                f"  python scripts/download_datasets.py --all\n"
+                f"  python scripts/train_model.py"
+            ),
+        )
+
+
+# ── Email analysis ─────────────────────────────────────────────────────────────
 
 @app.get("/")
 async def root():
@@ -249,153 +182,97 @@ async def root():
         "service": "Email Security Gateway",
         "version": "1.0.0",
         "status": "operational",
-        "model_loaded": _model is not None,
+        "model_loaded": model is not None,
+        "model_path": str(settings.model.tinybert_path),
     }
-
-
-# ---------------------------------------------------------------------------
-# Routes — core email analysis
-# ---------------------------------------------------------------------------
 
 
 @app.post("/api/v1/check-email", response_model=EmailCheckResponse)
 async def check_email(request: EmailCheckRequest):
-    """
-    Synchronous single-email threat check.
-
-    Returns threat_score, risk_level, explanations PLUS the new
-    intel (VirusTotal / WHOIS / Google SB) and auth (SPF/DKIM/DMARC) fields
-    that the dashboard uses to populate the admin card.
-    """
-    if not _model:
-        raise HTTPException(status_code=503, detail="Model not loaded")
-
+    """Synchronously analyse a single email."""
+    _require_model()
     try:
         text = f"{request.subject} {request.body}"
-        urls = request.urls or _email_parser._extract_urls(request.body)
+        urls = request.urls or email_parser._extract_urls(request.body)
 
-        # --- External intelligence ----------------------------------------
         external_score = 0.0
-        if urls and _threat_hub:
-            try:
-                features = _threat_hub.get_features_for_model(text, urls)
-                external_score = float(features[0]) if len(features) > 0 else 0.0
-            except Exception:
-                pass
+        if urls:
+            features = threat_hub.get_features_for_model(text, urls)
+            external_score = float(features[0]) if features else 0.0
 
-        # --- Model prediction ---------------------------------------------
-        prediction = _model.predict(text)
+        prediction = model.predict(text)
         model_score = (
             prediction.get("threat_score", 0.0)
-            if isinstance(prediction, dict)
-            else float(prediction)
+            if isinstance(prediction, dict) else float(prediction)
         )
 
-        combined_score = min(model_score * 0.6 + external_score * 0.4, 1.0)
+        combined = model_score * 0.6 + external_score * 0.4
 
-        # --- Explanations -------------------------------------------------
-        explanations: List[str] = []
-        if combined_score >= 0.7:
-            explanations.append("High overall threat score detected")
-        if model_score >= 0.6:
-            explanations.append("AI model flagged suspicious language patterns")
+        explanations = []
+        if combined > 0.7:
+            explanations.append("High overall threat score")
         if urls:
-            explanations.append(f"Found {len(urls)} URL(s) in email body")
-        if external_score >= 0.5:
-            explanations.append("One or more URLs have poor external reputation")
-        subj_lower = request.subject.lower()
-        if any(w in subj_lower for w in ("urgent", "verify", "suspended", "click")):
-            explanations.append("Subject contains urgency or verification keywords")
-        if not explanations:
-            explanations.append("No obvious phishing indicators detected")
-
-        # --- Intel breakdown (NEW) ----------------------------------------
-        intel = _build_intel(urls, _threat_hub) if _threat_hub else {}
-
-        # --- Auth (NEW) ---------------------------------------------------
-        auth = _build_auth(request.from_email)
-
-        # Auth failures raise the combined score
-        if auth and not auth.get("passed") and auth.get("score", 1.0) < 0.3:
-            combined_score = min(1.0, combined_score + 0.20)
-            explanations.append("SPF / DKIM / DMARC authentication failed")
+            explanations.append(f"Found {len(urls)} URL(s) in email")
+        if external_score > 0.5:
+            explanations.append("URLs have poor reputation")
+        if any(w in request.subject.lower() for w in ("urgent", "verify", "suspended")):
+            explanations.append("Subject contains urgency/verification keywords")
 
         return EmailCheckResponse(
-            threat_score=round(combined_score, 4),
-            risk_level=_get_risk_level(combined_score),
-            explanations=explanations,
+            threat_score=combined,
+            risk_level=_risk_level(combined),
+            explanations=explanations or ["No obvious threats detected"],
             timestamp=datetime.now(),
-            job_id=None,
-            intel=intel if intel else None,
-            auth=auth if auth else None,
         )
-
-    except Exception as exc:
-        logger.error(f"check_email error: {exc}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(exc))
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"check_email error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/v1/check-batch")
-async def check_batch(emails: List[EmailCheckRequest], background_tasks: BackgroundTasks):
+async def check_batch(emails: List[EmailCheckRequest]):
     """Queue multiple emails for background processing."""
-    if not _model or not _email_queue:
-        raise HTTPException(status_code=503, detail="Model or queue not ready")
-
-    job_ids = []
-    for email in emails:
-        jid = _email_queue.enqueue({
-            "subject": email.subject,
-            "body": email.body,
-            "from": email.from_email,
-            "to": email.to_email,
-        })
-        job_ids.append(jid)
-
+    _require_model()
+    job_ids = [
+        email_queue.enqueue({"subject": e.subject, "body": e.body,
+                             "from": e.from_email, "to": e.to_email})
+        for e in emails
+    ]
     return {
-        "message": f"Queued {len(job_ids)} email(s) for processing",
+        "message": f"Queued {len(job_ids)} emails",
         "job_ids": job_ids,
-        "status_url": "/api/v1/job-status/{job_id}",
+        "check_status_url": "/api/v1/job-status/{job_id}",
     }
 
 
 @app.get("/api/v1/job-status/{job_id}")
 async def get_job_status(job_id: str):
-    if not _email_queue:
+    if not email_queue:
         raise HTTPException(status_code=503, detail="Queue not initialised")
-    status = _email_queue.get_status(job_id)
+    status = email_queue.get_status(job_id)
     if not status:
         raise HTTPException(status_code=404, detail="Job not found")
     return status
 
 
-# ---------------------------------------------------------------------------
-# Routes — alerts
-# ---------------------------------------------------------------------------
-
+# ── Alerts ─────────────────────────────────────────────────────────────────────
 
 @app.get("/api/v1/alerts", response_model=List[AlertResponse])
 async def get_alerts(status: Optional[str] = None, limit: int = 50):
-    """Return recent alerts (mock data while no live gateway is running)."""
     mock = [
         {
-            "id": "alert_001",
-            "timestamp": datetime.now(),
-            "threat_score": 0.94,
-            "from_email": "support@gcash-verify.net",
-            "to_email": "employee@deped.gov.ph",
+            "id": "alert_001", "timestamp": datetime.now(), "threat_score": 0.94,
+            "from_email": "support@gcash-verify.net", "to_email": "employee@deped.gov.ph",
             "subject": "URGENT: Account verification needed",
-            "risk_level": "CRITICAL",
-            "status": "new",
+            "risk_level": "CRITICAL", "status": "new",
         },
         {
-            "id": "alert_002",
-            "timestamp": datetime.now(),
-            "threat_score": 0.67,
-            "from_email": "hr@company-ph.com",
-            "to_email": "staff@dict.gov.ph",
+            "id": "alert_002", "timestamp": datetime.now(), "threat_score": 0.67,
+            "from_email": "hr@company-ph.com", "to_email": "staff@dict.gov.ph",
             "subject": "Update your payroll information",
-            "risk_level": "HIGH",
-            "status": "acknowledged",
+            "risk_level": "HIGH", "status": "acknowledged",
         },
     ]
     if status:
@@ -403,109 +280,62 @@ async def get_alerts(status: Optional[str] = None, limit: int = 50):
     return mock[:limit]
 
 
-# ---------------------------------------------------------------------------
-# Routes — quarantine (NEW)
-# ---------------------------------------------------------------------------
-
-
-@app.get("/api/v1/quarantine")
-async def get_quarantine(limit: int = 50):
-    """
-    Return quarantined email metadata by reading the quarantine/ folder that
-    smtp_handler._quarantine_email() writes to.
-
-    Each file is a JSON object created when an email scores ≥ 0.80.
-    Falls back to an empty list when the folder does not yet exist (gateway
-    not running).
-    """
-    quarantine_dir = Path("quarantine")
-    if not quarantine_dir.exists():
-        return []
-
-    files = sorted(quarantine_dir.glob("*.json"), reverse=True)[:limit]
-    results = []
-    for f in files:
-        try:
-            results.append(_json.loads(f.read_text()))
-        except Exception as exc:
-            logger.warning(f"Could not read quarantine file {f}: {exc}")
-
-    return results
-
-
-@app.delete("/api/v1/quarantine/{quarantine_id}")
-async def release_quarantine(quarantine_id: str):
-    """Release (delete) a quarantined email by its ID."""
-    quarantine_dir = Path("quarantine")
-    target = quarantine_dir / f"{quarantine_id}.json"
-    if not target.exists():
-        raise HTTPException(status_code=404, detail="Quarantine record not found")
-    target.unlink()
-    logger.info(f"Quarantine released: {quarantine_id}")
-    return {"message": f"Released {quarantine_id}", "id": quarantine_id}
-
-
-# ---------------------------------------------------------------------------
-# Routes — whitelist / blacklist / feedback / stats
-# ---------------------------------------------------------------------------
-
+# ── Admin ──────────────────────────────────────────────────────────────────────
 
 @app.post("/api/v1/whitelist")
-async def add_to_whitelist(entry: WhitelistEntry):
+async def add_whitelist(entry: WhitelistEntry):
     logger.info(f"Whitelist add: {entry.email or entry.domain}")
-    return {"message": "Added to whitelist", "entry": entry.dict()}
+    return {"message": "Added to whitelist", "entry": entry.model_dump()}
 
 
 @app.delete("/api/v1/whitelist/{identifier}")
-async def remove_from_whitelist(identifier: str):
-    logger.info(f"Whitelist remove: {identifier}")
+async def remove_whitelist(identifier: str):
     return {"message": f"Removed {identifier} from whitelist"}
 
 
 @app.post("/api/v1/blacklist")
-async def add_to_blacklist(entry: BlacklistEntry):
+async def add_blacklist(entry: BlacklistEntry):
     logger.info(f"Blacklist add: {entry.email or entry.domain}")
-    return {"message": "Added to blacklist", "entry": entry.dict()}
+    return {"message": "Added to blacklist", "entry": entry.model_dump()}
 
 
 @app.delete("/api/v1/blacklist/{identifier}")
-async def remove_from_blacklist(identifier: str):
-    logger.info(f"Blacklist remove: {identifier}")
+async def remove_blacklist(identifier: str):
     return {"message": f"Removed {identifier} from blacklist"}
 
 
 @app.post("/api/v1/feedback")
-async def submit_feedback(
-    job_id: str, is_threat: bool, admin_notes: Optional[str] = None
-):
-    logger.info(f"Feedback for {job_id}: is_threat={is_threat}")
-    return {"message": "Feedback received", "job_id": job_id}
+async def submit_feedback(payload: FeedbackRequest):
+    logger.info(f"Feedback for {payload.job_id}: is_threat={payload.is_threat}")
+    return {"message": "Feedback received", "job_id": payload.job_id}
 
 
 @app.get("/api/v1/stats")
 async def get_stats():
-    queue_stats = _email_queue.get_stats() if _email_queue else {}
-    quarantine_count = len(list(Path("quarantine").glob("*.json"))) if Path("quarantine").exists() else 0
+    q = email_queue.get_stats() if email_queue else {}
     return {
-        "emails_processed": queue_stats.get("processed", 0),
-        "threats_detected": queue_stats.get("threats", 0),
-        "queue_size": queue_stats.get("queue_size", 0),
-        "avg_processing_time": round(queue_stats.get("avg_wait_time", 0.0), 3),
-        "model_loaded": _model is not None,
-        "quarantine_count": quarantine_count,
+        "emails_processed": q.get("processed", 0),
+        "threats_detected": q.get("threats", 0),
+        "queue_size": q.get("queue_size", 0),
+        "avg_processing_time": q.get("avg_wait_time", 0.0),
+        "model_loaded": model is not None,
         "timestamp": datetime.now(),
     }
 
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
+# ── Health ─────────────────────────────────────────────────────────────────────
+
+@app.get("/health")
+async def health():
+    return {"status": "ok", "timestamp": datetime.now().isoformat()}
+
+
+@app.get("/health/ready")
+async def ready():
+    if not model:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+    return {"status": "ready"}
+
 
 if __name__ == "__main__":
-    uvicorn.run(
-        "src.api.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info",
-    )
+    uvicorn.run("src.api.main:app", host="0.0.0.0", port=8000, reload=True)

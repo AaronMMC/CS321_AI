@@ -1,12 +1,18 @@
 """
-Models package for email security gateway
+Models package.
+Import directly from scratch_transformer — tinybert_model.py has been removed.
 """
-from src.models.bert_classifier import BERTPhishingClassifier, ModelOutput
-from src.models.tinybert_model import TinyBERTForEmailSecurity, create_mini_dataset_for_quick_training
+from src.models.scratch_transformer import (
+    ScratchModelForEmailSecurity,
+    SimpleTokenizer,
+    ScratchTransformerClassifier,
+)
+from src.models.bert_classifier import ScratchBERTClassifier, ModelOutput
 
 __all__ = [
-    'BERTPhishingClassifier',
-    'ModelOutput',
-    'TinyBERTForEmailSecurity',
-    'create_mini_dataset_for_quick_training'
+    "ScratchModelForEmailSecurity",
+    "SimpleTokenizer",
+    "ScratchTransformerClassifier",
+    "ScratchBERTClassifier",
+    "ModelOutput",
 ]
