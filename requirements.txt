@@ -53,3 +53,4 @@ plotly
 protobuf
 google-auth-oauthlib
 google-api-python-client
+tqdm

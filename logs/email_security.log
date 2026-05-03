@@ -85,3 +85,148 @@
 2026-05-02 21:27:38 | INFO     | src.models.scratch_transformer:build_vocab:77 - Vocabulary built: 30,000 tokens (min_freq=2, max_vocab=30000)
 2026-05-02 21:27:38 | INFO     | src.models.scratch_transformer:__init__:216 - ScratchTransformerClassifier initialised (vocab=30,000, embed=256, layers=4, heads=8) — 9,822,082 parameters — ALL WEIGHTS RANDOM
 2026-05-02 21:27:42 | INFO     | src.models.scratch_transformer:train_quick:411 - Training from scratch — 28,599 samples, 5 epochs, device=cpu
+2026-05-02 21:57:33 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 21:57:33 | WARNING  | __main__:_pick_device:158 - No CUDA GPU detected — falling back to CPU
+2026-05-02 21:57:33 | INFO     | __main__:_load_data:94 - Loading data from C:\Users\aaron\PycharmProjects\CS321_AI\data\processed\training_data.csv
+2026-05-02 21:57:34 | INFO     | __main__:_load_data:97 -   33,646 rows loaded
+2026-05-02 21:57:34 | INFO     | __main__:main:424 - Sampled 6,729 rows (fraction=0.2)
+2026-05-02 21:57:34 | INFO     | __main__:train:189 - Split: 5,719 train / 1,010 val
+2026-05-02 21:57:34 | INFO     | __main__:train:192 - Building vocabulary …
+2026-05-02 21:57:34 | INFO     | src.models.scratch_transformer:build_vocab:77 - Vocabulary built: 30,000 tokens (min_freq=2, max_vocab=30000)
+2026-05-02 21:57:34 | INFO     | src.models.scratch_transformer:__init__:216 - ScratchTransformerClassifier initialised (vocab=30,000, embed=256, layers=4, heads=8) — 9,822,082 parameters — ALL WEIGHTS RANDOM
+2026-05-02 21:57:34 | INFO     | __main__:train:203 - Model: 9,822,082 parameters on cpu
+2026-05-02 22:02:43 | INFO     | src.models.scratch_transformer:save:113 - Tokenizer saved → C:\Users\aaron\PycharmProjects\CS321_AI\models_saved\email_security_model\tokenizer.json
+2026-05-02 22:02:43 | INFO     | __main__:_save:356 - Checkpoint saved → C:\Users\aaron\PycharmProjects\CS321_AI\models_saved\email_security_model
+2026-05-02 22:02:43 | INFO     | __main__:train:236 - Time limit reached — stopping training loop
+2026-05-02 22:02:44 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 22:02:46 | INFO     | src.api.main:startup_event:122 - Starting Email Security Gateway API …
+2026-05-02 22:02:46 | INFO     | src.models.scratch_transformer:load:123 - Tokenizer loaded ← models_saved\email_security_model\tokenizer.json (30,000 tokens)
+2026-05-02 22:02:46 | INFO     | src.models.scratch_transformer:__init__:216 - ScratchTransformerClassifier initialised (vocab=30,000, embed=256, layers=4, heads=8) — 9,822,082 parameters — ALL WEIGHTS RANDOM
+2026-05-02 22:02:46 | INFO     | src.models.scratch_transformer:load:505 - Model loaded ← models_saved\email_security_model
+2026-05-02 22:02:46 | INFO     | src.api.main:startup_event:129 - Model loaded from models_saved\email_security_model
+2026-05-02 22:02:46 | WARNING  | src.features.external_intelligence:__init__:29 - VirusTotal API key not configured - will use mock data
+2026-05-02 22:02:46 | WARNING  | src.features.external_intelligence:__init__:140 - Google Safe Browsing API key not configured
+2026-05-02 22:02:46 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-05-02 22:02:46 | WARNING  | src.alerting.email:__init__:69 - Email alerts disabled — set GMAIL_ADDRESS and GMAIL_APP_PASSWORD in .env to enable
+2026-05-02 22:02:46 | INFO     | src.alerting.email:get_email_sender:247 - Falling back to MockEmailAlertSender (no credentials)
+2026-05-02 22:02:46 | INFO     | src.alerting.email:__init__:226 - MockEmailAlertSender active (no real email will be sent)
+2026-05-02 22:02:46 | INFO     | src.api.main:startup_event:150 - Async processor started
+2026-05-02 22:02:46 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-05-02 22:02:46 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-05-02 22:02:46 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-05-02 22:03:03 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 22:03:37 | INFO     | src.api.main:shutdown_event:155 - Shutting down …
+2026-05-02 22:03:37 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-05-02 22:19:19 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 22:19:22 | INFO     | src.api.main:startup_event:122 - Starting Email Security Gateway API …
+2026-05-02 22:19:22 | INFO     | src.models.scratch_transformer:load:123 - Tokenizer loaded ← models_saved\email_security_model\tokenizer.json (30,000 tokens)
+2026-05-02 22:19:22 | INFO     | src.models.scratch_transformer:__init__:216 - ScratchTransformerClassifier initialised (vocab=30,000, embed=256, layers=4, heads=8) — 9,822,082 parameters — ALL WEIGHTS RANDOM
+2026-05-02 22:19:22 | INFO     | src.models.scratch_transformer:load:505 - Model loaded ← models_saved\email_security_model
+2026-05-02 22:19:22 | INFO     | src.api.main:startup_event:129 - Model loaded from models_saved\email_security_model
+2026-05-02 22:19:22 | WARNING  | src.features.external_intelligence:__init__:29 - VirusTotal API key not configured - will use mock data
+2026-05-02 22:19:22 | WARNING  | src.features.external_intelligence:__init__:140 - Google Safe Browsing API key not configured
+2026-05-02 22:19:22 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-05-02 22:19:22 | INFO     | src.alerting.email:__init__:64 - EmailAlertSender ready (Gmail) — alerts → dyciaaron722@gmail.com (threshold ≥ 60%)
+2026-05-02 22:19:22 | INFO     | src.api.main:startup_event:150 - Async processor started
+2026-05-02 22:19:22 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-05-02 22:19:22 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-05-02 22:19:22 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-05-02 22:20:02 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-02 22:20:10 | INFO     | src.api.main:shutdown_event:155 - Shutting down …
+2026-05-02 22:20:10 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
+2026-05-03 15:51:22 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-03 15:51:24 | INFO     | src.api.main:startup_event:132 - Starting Email Security Gateway API …
+2026-05-03 15:51:24 | INFO     | src.models.scratch_transformer:load:123 - Tokenizer loaded ← models_saved\email_security_model\tokenizer.json (30,000 tokens)
+2026-05-03 15:51:24 | INFO     | src.models.scratch_transformer:__init__:216 - ScratchTransformerClassifier initialised (vocab=30,000, embed=256, layers=4, heads=8) — 9,822,082 parameters — ALL WEIGHTS RANDOM
+2026-05-03 15:51:24 | INFO     | src.models.scratch_transformer:load:505 - Model loaded ← models_saved\email_security_model
+2026-05-03 15:51:24 | INFO     | src.api.main:startup_event:138 - Model loaded from models_saved\email_security_model
+2026-05-03 15:51:24 | WARNING  | src.features.external_intelligence:__init__:29 - VirusTotal API key not configured - will use mock data
+2026-05-03 15:51:24 | WARNING  | src.features.external_intelligence:__init__:140 - Google Safe Browsing API key not configured
+2026-05-03 15:51:24 | INFO     | src.features.external_intelligence:__init__:302 - Threat Intelligence Hub initialized
+2026-05-03 15:51:24 | INFO     | src.alerting.email:__init__:64 - EmailAlertSender ready (Gmail) — alerts → dyciaaron722@gmail.com (threshold ≥ 60%)
+2026-05-03 15:51:24 | INFO     | src.api.main:startup_event:155 - Async processor started
+2026-05-03 15:51:24 | INFO     | src.gateway.queue_manager:start:129 - Started 2 async workers
+2026-05-03 15:51:24 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 0 started
+2026-05-03 15:51:24 | INFO     | src.gateway.queue_manager:_worker:141 - Worker 1 started
+2026-05-03 15:51:50 | INFO     | src.utils.logger:setup_logging:45 - Logging configured successfully
+2026-05-03 15:52:26 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for deped.gov.ph: Whois command returned no output
+2026-05-03 15:52:32 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-05-03 15:52:33 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for gcash-verify.net: No match for "GCASH-VERIFY.NET".
+>>> Last update of whois database: 2026-05-03T07:52:20Z <<<
+
+NOTICE: The expiration date displayed in this record is the date the
+registrar's sponsorship of the domain name registration in the registry is
+currently set to expire. This date does not necessarily reflect the expiration
+date of the domain name registrant's agreement with the sponsoring
+registrar.  Users may consult the sponsoring registrar's Whois database to
+view the registrar's reported date of expiration for this registration.
+
+TERMS OF USE: You are not authorized to access or query our Whois
+database through the use of electronic processes that are high-volume and
+automated except as reasonably necessary to register domain names or
+modify existing registrations; the Data in VeriSign Global Registry
+Services' ("VeriSign") Whois database is provided by VeriSign for
+information purposes only, and to assist persons in obtaining information
+about or related to a domain name registration record. VeriSign does not
+guarantee its accuracy. By submitting a Whois query, you agree to abide
+by the following terms of use: You agree that you may use this Data only
+for lawful purposes and that under no circumstances will you use this Data
+to: (1) allow, enable, or otherwise support the transmission of mass
+unsolicited, commercial advertising or solicitations via e-mail, telephone,
+or facsimile; or (2) enable high volume, automated, electronic processes
+that apply to VeriSign (or its computer systems). The compilation,
+repackaging, dissemination or other use of this Data is expressly
+prohibited without the prior written consent of VeriSign. You agree not to
+use electronic processes that are automated and high-volume to access or
+query the Whois database except as reasonably necessary to register
+domain names or modify existing registrations. VeriSign reserves the right
+to restrict your access to the Whois database in its sole discretion to ensure
+operational stability.  VeriSign may restrict or terminate your access to the
+Whois database for failure to abide by these terms of use. VeriSign
+reserves the right to modify these terms at any time.
+
+The Registry database contains ONLY .COM, .NET, .EDU domains and
+Registrars.
+
+2026-05-03 15:52:38 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-05-03 15:52:39 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for dict-verify.com: No match for "DICT-VERIFY.COM".
+>>> Last update of whois database: 2026-05-03T07:52:36Z <<<
+
+NOTICE: The expiration date displayed in this record is the date the
+registrar's sponsorship of the domain name registration in the registry is
+currently set to expire. This date does not necessarily reflect the expiration
+date of the domain name registrant's agreement with the sponsoring
+registrar.  Users may consult the sponsoring registrar's Whois database to
+view the registrar's reported date of expiration for this registration.
+
+TERMS OF USE: You are not authorized to access or query our Whois
+database through the use of electronic processes that are high-volume and
+automated except as reasonably necessary to register domain names or
+modify existing registrations; the Data in VeriSign Global Registry
+Services' ("VeriSign") Whois database is provided by VeriSign for
+information purposes only, and to assist persons in obtaining information
+about or related to a domain name registration record. VeriSign does not
+guarantee its accuracy. By submitting a Whois query, you agree to abide
+by the following terms of use: You agree that you may use this Data only
+for lawful purposes and that under no circumstances will you use this Data
+to: (1) allow, enable, or otherwise support the transmission of mass
+unsolicited, commercial advertising or solicitations via e-mail, telephone,
+or facsimile; or (2) enable high volume, automated, electronic processes
+that apply to VeriSign (or its computer systems). The compilation,
+repackaging, dissemination or other use of this Data is expressly
+prohibited without the prior written consent of VeriSign. You agree not to
+use electronic processes that are automated and high-volume to access or
+query the Whois database except as reasonably necessary to register
+domain names or modify existing registrations. VeriSign reserves the right
+to restrict your access to the Whois database in its sole discretion to ensure
+operational stability.  VeriSign may restrict or terminate your access to the
+Whois database for failure to abide by these terms of use. VeriSign
+reserves the right to modify these terms at any time.
+
+The Registry database contains ONLY .COM, .NET, .EDU domains and
+Registrars.
+
+2026-05-03 15:52:44 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for bit.ly: can't subtract offset-naive and offset-aware datetimes
+2026-05-03 15:52:46 | ERROR    | src.features.external_intelligence:check_domain:272 - WHOIS lookup failed for company-payroll.com: can't subtract offset-naive and offset-aware datetimes
+2026-05-03 15:56:54 | INFO     | src.api.main:shutdown_event:160 - Shutting down …
+2026-05-03 15:56:54 | INFO     | src.gateway.queue_manager:stop:137 - All workers stopped
