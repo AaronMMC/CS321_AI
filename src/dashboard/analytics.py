@@ -9,7 +9,7 @@ Reads real data from:
   - data/processed/training_data.csv -> full dataset
   - data/raw/*.csv                   -> individual source counts
   - logs/email_security.log          -> training curve epoch lines
-  - models_saved/tinybert_enron_spam -> loaded model for live scoring
+  - models_saved/email_security_model -> loaded model for live scoring
 """
 
 import streamlit as st
@@ -38,7 +38,7 @@ def _safe_load(path, **kwargs):
 def _load_model():
     try:
         from src.models.scratch_transformer import ScratchModelForEmailSecurity
-        save_path = Path("models_saved/tinybert_enron_spam")
+        save_path = Path("models_saved/email_security_model")
         if save_path.exists():
             return ScratchModelForEmailSecurity.load(str(save_path), use_gpu=False)
     except Exception:
@@ -221,7 +221,7 @@ def render_analytics():
         st.warning(
             "Could not run predictions on test.csv. "
             "Make sure `data/processed/test.csv` exists and a model is saved at "
-            "`models_saved/tinybert_enron_spam`."
+            "`models_saved/email_security_model`."
         )
 
     subtab_labels = ["Performance metrics", "Dataset explorer", "Training curves"]
