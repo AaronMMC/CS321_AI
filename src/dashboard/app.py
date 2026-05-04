@@ -16,6 +16,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from src.dashboard import alerts, admin
+from src.dashboard.analytics import render_analytics
 
 # ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -143,10 +144,15 @@ def main_dashboard():
     with st.sidebar:
         st.markdown(f"### Welcome, {st.session_state.username}")
         st.markdown("---")
-        page = st.radio("Navigation", ["📊 Dashboard", "🔍 Email Checker", "⚠️ Alerts", "⚙️ Settings", "👤 Admin"])
+        page = st.radio(
+            "Navigation",
+            ["📊 Dashboard", "🔍 Email Checker", "⚠️ Alerts",
+             "📈 Analytics", "⚙️ Settings", "👤 Admin"],
+        )
         st.markdown("---")
         if st.button("🔄 Refresh Data", use_container_width=True):
             st.session_state.last_refresh = datetime.now()
+            st.cache_data.clear()
             st.rerun()
         st.caption(f"Last refreshed: {st.session_state.last_refresh.strftime('%H:%M:%S')}")
         st.markdown("---")
@@ -160,6 +166,8 @@ def main_dashboard():
         render_email_checker()
     elif page == "⚠️ Alerts":
         render_alerts()
+    elif page == "📈 Analytics":
+        render_analytics()
     elif page == "⚙️ Settings":
         render_settings()
     elif page == "👤 Admin":
