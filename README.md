@@ -1,17 +1,64 @@
-# 🛡️ Email Security Gateway
-## AI-Powered Multi-Layered Email Protection System
+# Email Security Gateway
+## CS321 — AI-Powered Email Phishing Detection for Philippine Government
 
-A comprehensive email security solution that provides defense-in-depth protection against phishing, spoofing, and malicious content through four integrated security layers.
-
-> **✨ Features Implemented**: All 4 security layers completed and fully integrated
-> - **Layer 1**: Authentication Verification (SPF/DKIM/DMARC) 
-> - **Layer 2**: AI-Powered Threat Detection (TinyBERT + Threat Intelligence)
-> - **Layer 3**: Visual Warning Injection (Subject prefixes, body banners, headers)
-> - **Layer 4**: Click-Time Protection (URL rewriting for real-time safety checking)
+A four-layer email security prototype built entirely from scratch — no pre-trained model weights, no third-party AI services. Every component, from the neural network to the SMTP proxy, is implemented in Python and trained on real public phishing/spam datasets.
 
 ---
 
-## 🏗️ SYSTEM ARCHITECTURE
+## What This Project Does
+
+The gateway sits between the internet and an internal mail server, intercepting every inbound email before it reaches a recipient's inbox. Each email is run through four sequential security layers in real time:
+
+**Layer 1 — Email Authentication (SPF / DKIM / DMARC)**
+DNS records for the sender's domain are queried to verify the email actually came from who it claims to be from. A mismatch adds a significant boost to the threat score.
+
+**Layer 2 — AI Threat Detection**
+The email subject and body are tokenised and fed through a Transformer-based classifier trained from scratch on labelled phishing and legitimate email datasets. The model produces a threat score between 0 and 1. This is combined with external intelligence signals (VirusTotal URL reputation, WHOIS domain age, Google Safe Browsing) using a 60/30/10 weighted formula.
+
+**Layer 3 — Visual Warning Injection**
+Emails scoring above the medium threshold (≥ 0.4) are modified before delivery. The subject line gets a visible `[WARNING]` or `[SUSPICIOUS]` prefix, and a plain-text warning banner is prepended to the body explaining why the email was flagged, along with contextual safety tips. This means recipients are warned regardless of which email client they use.
+
+**Layer 4 — Click-Time URL Protection**
+Every URL in the email body is rewritten to route through a local security proxy. If a recipient clicks a link after the email arrives, the proxy checks the URL in real time and blocks it if it has become malicious — catching threats that were clean at delivery time.
+
+Emails scoring critically high (≥ 0.8) are quarantined entirely and never reach the inbox. When a threat is detected, an alert email is dispatched to the admin address via Gmail.
+
+---
+
+## The AI Model
+
+The classifier is a `ScratchTransformerClassifier` — a standard Transformer encoder architecture implemented directly in PyTorch with no pre-trained weights of any kind. Every parameter is randomly initialised and trained from the ground up on your own data.
+
+**Architecture:**
+- Word-level tokeniser (`SimpleTokenizer`) built from the training corpus — no external vocabulary
+- Sinusoidal positional encoding
+- 4 Transformer encoder layers, 8 attention heads, embedding dimension 256, FFN dimension 512
+- Mean-pooling over real tokens (padding masked out)
+- Two-layer classification head with GELU activations and dropout
+- Total: approximately 9.82 million parameters
+
+**Why from scratch?** Using a pre-trained model like BERT or TinyBERT would rely on weights generated from data that may not reflect Philippine government email patterns, GCash phishing, DICT impersonation, or other locally-relevant threats. Training from scratch on the actual dataset means the model learns exactly the vocabulary and patterns present in the threat landscape being targeted.
+
+**Training datasets** (downloaded automatically by `scripts/download_datasets.py`):
+- Enron spam corpus (~33k emails)
+- Nazario phishing corpus
+- SpamAssassin corpus
+- CEAS 2008 spam challenge dataset
+- Nigerian fraud corpus
+- Rokibulroni Enron variant
+
+The datasets are normalised to a common `(text, label)` format and split 70/10/20 into train, validation, and test sets with stratification to preserve class balance. Data augmentation (synonym swapping, sentence shuffling, noise insertion) is applied to the training set to improve generalisation.
+
+**Training procedure:**
+- Optimiser: AdamW with weight decay 1e-2
+- Scheduler: OneCycleLR with 10% warm-up and cosine annealing
+- Gradient clipping at max norm 1.0
+- Early stopping on validation F1 with patience 3
+- Default run: 5-minute wall-clock cap (configurable)
+
+---
+
+## System Components
 
 ```
 Internet / MTA
@@ -24,7 +71,7 @@ Internet / MTA
          │ parsed email dict
          ▼
 ┌─────────────────────┐       ┌──────────────────────┐
-│  TinyBERT Model     │ ◄────►│  Threat Intel Hub    │
+│  Scratch Transformer│ ◄────►│  Threat Intel Hub    │
 │  (text classifier)  │       │  VirusTotal / WHOIS  │
 └────────┬────────────┘       │  Google Safe Browse  │
          │ threat_score       └──────────────────────┘
@@ -37,103 +84,111 @@ Internet / MTA
     ▼         ▼
 FastAPI    Streamlit
 REST API   Dashboard
-:8000      :8502
+:8000      :8501
 ```
+
+**`src/gateway/smtp_handler.py`** — aiosmtpd-based SMTP proxy. Receives raw email bytes, coordinates all four security layers, rewrites the envelope if a warning is injected, and forwards to the downstream mail server.
+
+**`src/models/scratch_transformer.py`** — Complete Transformer implementation: tokeniser, positional encoding, encoder layers, classification head, dataset wrapper, and the `ScratchModelForEmailSecurity` high-level wrapper with `train_quick()` and `predict()`.
+
+**`src/features/external_intelligence.py`** — Queries VirusTotal (URL maliciousness scores), WHOIS (domain age), and Google Safe Browsing. Returns a 4-dimensional feature vector used alongside the model score.
+
+**`src/features/warning_injection.py`** — Modifies email subject lines and bodies with visible warnings. Generates contextual Just-in-Time Training safety tips based on the specific threat detected (e.g. GCash-specific advice when a GCash impersonation is detected).
+
+**`src/features/click_time_protection.py`** — Rewrites URLs to a local proxy endpoint. The proxy checks URL safety at click time and renders a block page if a threat is confirmed.
+
+**`src/features/authentication_verification.py`** — SPF, DKIM, and DMARC verification via DNS. Runs in an async thread-pool executor so it never stalls the event loop.
+
+**`src/api/main.py`** — FastAPI REST service exposing `/api/v1/check-email`, `/api/v1/check-batch`, `/api/v1/alerts`, and `/api/v1/stats`. Includes the same four-layer scoring logic so external tools can submit emails for analysis.
+
+**`src/dashboard/app.py`** — Streamlit admin dashboard with real-time metrics, alert management, an email checker, model performance analytics (ROC/PR curves, confusion matrix, training curves parsed from logs), and dataset explorer.
 
 ---
 
-## 🚀 QUICK START
+## Quick Start
 
-### Option 1: Complete System (Recommended)
+### Step 1 — Train the model
+
 ```bash
-# Start all services: API, Dashboard, SMTP Gateway
-scripts\start_gateway.bat  # Windows
-# or
-./scripts/start_gateway.sh  # Linux/Mac
+python scripts/train_model.py
 ```
 
-Access points:
-- **Dashboard**: http://localhost:8502 (admin/admin123)
-- **API Docs**: http://localhost:8000/docs
-- **SMTP Gateway**: Configure mail relay to localhost:10025
+This downloads the datasets if missing, trains the Scratch Transformer for up to 5 minutes (configurable), and saves the checkpoint to `models_saved/email_security_model/`.
 
-### Option 2: Dashboard Only (for UI Testing)
 ```bash
-python -m streamlit run src/dashboard/app.py --server.port 8502
+# Longer run
+python scripts/train_model.py --max-minutes 30 --epochs 20
+
+# Force CPU (if no GPU)
+python scripts/train_model.py --no-gpu
 ```
-Access: http://localhost:8502
 
-### Option 3: API Only (for Programmatic Testing)
+### Step 2 — Start the services
+
 ```bash
-python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+# API + Dashboard (recommended)
+python run.py
+
+# All services including SMTP gateway
+python run.py --all
+
+# Or start individually
+python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+python -m streamlit run src/dashboard/app.py --server.port 8501
 ```
-Access: http://localhost:8000/docs
 
-### Option 4: Docker Deployment
+### Step 3 — Run the live demo
+
 ```bash
-# 1. Clone & enter the repo
-git clone <your-repo-url>
-cd email-security-gateway
+python scripts/demo_scenarios.py
+```
 
-# 2. Copy and edit environment variables
-cp .env .env.local          # keep .env as template
-# Edit .env: add API keys if you have them (optional for demo)
+This runs four scenarios against the API and prints a colour-coded report showing the threat score, risk level, and action taken for each email.
 
-# 3. Build and start all services
+### Step 4 (optional) — Docker
+
+```bash
 docker compose up --build
-
-# 4. Open the dashboard
-open http://localhost:8501   # admin / admin123
-# API docs
-open http://localhost:8000/docs
+# Dashboard: http://localhost:8501
+# API docs:  http://localhost:8000/docs
 ```
 
 ---
 
-## 🔧 CONFIGURATION
+## Access Points
 
-All settings are driven by environment variables loaded from `.env`.
-
-| Variable | Default | Description |
-|---|---|---|
-| `VIRUSTOTAL_API_KEY` | *(empty)* | VirusTotal v3 API key |
-| `GOOGLE_SAFE_BROWSING_API_KEY` | *(empty)* | Google Safe Browsing API key |
-| `TWILIO_ACCOUNT_SID` | *(empty)* | Twilio account SID for SMS alerts |
-| `TWILIO_AUTH_TOKEN` | *(empty)* | Twilio auth token |
-| `TELEGRAM_BOT_TOKEN` | *(empty)* | Telegram bot token |
-| `DATABASE_URL` | `sqlite:///email_security.db` | SQLAlchemy database URL |
-| `MODEL_PATH` | `models_saved/bert_phishing_detector_v1` | Path to fine-tuned BERT |
-| `TINYBERT_MODEL_PATH` | `models_saved/tinybert_enron_spam` | Path to fine-tuned TinyBERT |
-| `ADMIN_EMAIL` | `admin@prototype.local` | Recipient for email alerts |
-| `ADMIN_PHONE` | *(empty)* | Phone number for SMS alerts |
-| `LOG_LEVEL` | `INFO` | Logging verbosity |
-| `REDIS_URL` | `redis://localhost:6379` | Redis connection URL |
-| `SMTP_QUEUE_HOST` | `localhost` | SMTP queue host |
-| `SMTP_QUEUE_PORT` | `6379` | SMTP queue port |
-
-> **API keys are optional.** Without them, the system uses mock/heuristic scores so you can still run and demo the full pipeline locally.
+| Service | URL |
+|---|---|
+| Admin Dashboard | http://localhost:8501 (admin / admin123) |
+| REST API | http://localhost:8000 |
+| API Documentation | http://localhost:8000/docs |
+| SMTP Gateway | localhost:10025 |
 
 ---
 
-## 📚 API REFERENCE
+## Configuration
 
-Interactive docs are available at **http://localhost:8000/docs** once the API is running.
+All settings are loaded from `.env`. The file is created automatically on first run.
 
-### Core endpoints
-
-| Method | Path | Description |
+| Variable | Default | Purpose |
 |---|---|---|
-| `GET` | `/` | Service info + model status |
-| `POST` | `/api/v1/check-email` | Analyse a single email |
-| `POST` | `/api/v1/check-batch` | Queue a batch of emails |
-| `GET` | `/api/v1/job-status/{job_id}` | Poll a queued job |
-| `GET` | `/api/v1/alerts` | List recent alerts |
-| `GET` | `/api/v1/stats` | Queue and model statistics |
-| `POST` | `/api/v1/feedback` | Submit human-in-the-loop label |
-| `POST` | `/api/v1/whitelist` | Add sender to whitelist |
-| `POST` | `/api/v1/blacklist` | Add sender to blacklist |
+| `TINYBERT_MODEL_PATH` | `models_saved/email_security_model` | Path to saved Scratch Transformer checkpoint |
+| `GMAIL_ADDRESS` | *(empty)* | Gmail address used to send threat alerts |
+| `GMAIL_APP_PASSWORD` | *(empty)* | Gmail App Password (generate at myaccount.google.com/apppasswords) |
+| `ALERT_RECIPIENT` | same as GMAIL_ADDRESS | Who receives threat alert emails |
+| `GMAIL_ALERT_THRESHOLD` | `0.6` | Minimum score before an alert email is sent |
+| `VIRUSTOTAL_API_KEY` | *(empty)* | VirusTotal v3 key — uses mock scores if absent |
+| `GOOGLE_SAFE_BROWSING_API_KEY` | *(empty)* | Google SB key — uses mock scores if absent |
+| `DATABASE_URL` | `sqlite:///email_security.db` | Database connection string |
+| `LOG_LEVEL` | `INFO` | Logging verbosity |
 
-### Example — check a single email
+API keys are optional. When absent, the system substitutes heuristic mock scores so the full pipeline remains functional for demonstration.
+
+---
+
+## API Reference
+
+### Analyse a single email
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/check-email \
@@ -146,297 +201,160 @@ curl -X POST http://localhost:8000/api/v1/check-email \
 ```
 
 Response:
+
 ```json
 {
   "threat_score": 0.87,
   "risk_level": "CRITICAL",
   "explanations": [
-    "High threat score detected",
-    "Found 1 URL(s) in email",
-    "Subject contains urgency/verification keywords"
+    "AI model flagged suspicious language",
+    "URLs have poor reputation",
+    "Contains urgency language",
+    "Requests account verification"
   ],
-  "timestamp": "2024-01-20T14:32:00",
-  "job_id": "job_1705758720.123_-1234567890"
+  "auth": {
+    "spf": "Fail — No SPF record found",
+    "dkim": "Fail — No DKIM-Signature header found",
+    "dmarc": "Policy: none — Fail"
+  },
+  "intel": {
+    "virustotal_flags": "5 malicious / 8 suspicious out of 60 vendors",
+    "domain_age_label": "Unknown",
+    "google_safe_browsing": "Threat detected"
+  },
+  "timestamp": "2026-05-05T14:32:00",
+  "alert_sent": true
 }
 ```
 
+### Other endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/` | Service info, model and alert status |
+| `POST` | `/api/v1/check-email` | Analyse a single email |
+| `POST` | `/api/v1/check-batch` | Queue a batch for async processing |
+| `GET` | `/api/v1/job-status/{job_id}` | Poll a queued job |
+| `GET` | `/api/v1/alerts` | List recent alerts |
+| `GET` | `/api/v1/stats` | Queue and model statistics |
+| `POST` | `/api/v1/feedback` | Submit human-in-the-loop correction |
+| `POST` | `/api/v1/whitelist` | Add a sender to the whitelist |
+| `POST` | `/api/v1/blacklist` | Add a sender to the blacklist |
+
 ---
 
-## 🧪 TESTING THE SYSTEM
+## Threat Scoring Logic
 
-### **Quick Validation**
-```bash
-# Test all modules import correctly
-python -c "
-from src.features.warning_injection import EmailWarningInjector
-from src.features.click_time_protection import ClickTimeProtection
-from src.features.authentication_verification import verify_email_authentication
-from src.features.performance_metrics import get_performance_metrics
-print('✓ All security layers import successfully')
-"
+The final combined score is computed as:
 
-# Test end-to-end flow
-python demo_warning_injection.py
+```
+combined_score = (model_score × 0.60) + (external_score × 0.30) + (heuristic_score × 0.10)
 ```
 
-### **Test Email Samples**
-Try these in the Dashboard's Email Checker or send via SMTP (port 10025):
+The heuristic score is derived from hand-crafted text features (urgency words, verification requests, prize language, sensitive information requests) and URL structural features (URL shorteners, suspicious TLDs, IP addresses used as hostnames, domain entropy).
 
-1. **✅ Safe Email**: "Team meeting agenda for 3pm today"
-   - Expected: Minimal processing, normal delivery
-
-2. **⚠️ Suspicious Link**: "Your package delayed - track: http://bit.ly/track-123"
-   - Expected: MEDIUM threat, URL rewriting active
-
-3. **🚨 Phishing Attempt**: "URGENT: Your account will be closed - verify now!"
-   - Expected: HIGH/CRITICAL threat, warning injection active
-
-4. **🎭 Spoofed Sender**: "From: paypal-support@paypa1-security.net"
-   - Expected: Authentication failure, threat score boost
-
-5. **🔗 Malicious URL**: "Click here: http://known-malware-site.tk/download"
-   - Expected: Click-time blocking at URL level
+| Score range | Risk level | Action |
+|---|---|---|
+| 0.80 – 1.00 | CRITICAL | Email quarantined — never reaches inbox |
+| 0.60 – 0.79 | HIGH | Warning injected, URL rewriting applied, admin alerted |
+| 0.40 – 0.59 | MEDIUM | Warning injected, URL rewriting applied |
+| 0.20 – 0.39 | LOW | Delivered cleanly |
+| 0.00 – 0.19 | SAFE | Delivered cleanly |
 
 ---
 
-## 📁 PROJECT STRUCTURE
+## Project Structure
+
 ```
 email-security-gateway/
 ├── src/
-│   ├── gateway/                # SMTP interception & processing
-│   │   ├── smtp_handler.py     # Main email processing pipeline (ALL 4 LAYERS)
-│   │   ├── email_parser.py     # RFC 822 email parsing
-│   │   └── queue_manager.py    # Async processing queue
-│   │
-│   ├── features/               # Security layer implementations
-│   │   ├── authentication_verification.py  # Layer 1: SPF/DKIM/DMARC
-│   │   ├── external_intelligence.py          # Threat intelligence feeds
-│   │   ├── text_features.py                    # NLP features for AI
-│   │   ├── url_features.py                     # URL analysis features
-│   │   ├── metadata_features.py                # Header analysis features
-│   │   ├── warning_injection.py                # Layer 3: Visual warnings
-│   │   ├── click_time_protection.py            # Layer 4: URL rewriting
-│   │   └── performance_metrics.py              # Layer 5: Monitoring
-│   │
-│   ├── models/                 # Machine learning components
-│   │   ├── tinybert_model.py           # Core AI threat detection
-│   │   └── utils.py                    # Model utilities
-│   │
-│   ├── dashboard/              # Web interface (Streamlit)
-│   │   ├── app.py                  # Main dashboard entry
-│   │   ├── alerts.py               # Alert visualization
-│   │   └── admin.py                # Administrative panel
-│   │
-│   ├── api/                    # REST API (FastAPI)
-│   │   ├── main.py               # API application factory
-│   │   ├── routes.py             # API endpoint definitions
-│   │   └── schemas.py            # Request/response models
-│   │
-│   ├── alerting/               # Notification channels
-│   │   ├── sms.py                # Twilio SMS alerts
-│   │   ├── email.py              # SMTP email alerts
-│   │   └── telegram.py           # Telegram bot alerts
-│   │
-│   ├── training/               # Model training pipeline
-│   │   ├── trainer.py            # Main training loop
-│   │   ├── config.py             # Training configuration
-│   │   └── evaluate.py           # Model evaluation
-│   │
-│   ├── data/                   # Data processing utilities
-│   │   ├── collector.py          # Dataset downloading
-│   │   ├── preprocessor.py       # Text cleaning pipeline
-│   │   └── augmenter.py        # Synthetic data generation
-│   │
-│   └── utils/                  # Cross-cutting concerns
-│       ├── config.py             # Environment configuration
-│   │   ├── logger.py             # Logging setup
-│   │   ├── helpers.py            # General utilities
-│   │   └── validators.py       # Email/URL/domain validation
-│
-├── tests/                      # Test suites
-│   ├── test_features/          # Feature-specific tests
-│   ├── test_models/            # Model tests
-│   ├── test_api/               # API endpoint tests
-│   └── test_system/            # End-to-end integration tests
-│
-├── scripts/                    # Deployment & utilities
-│   ├── start_gateway.bat       # Windows service startup
-│   ├── start_gateway.sh        # Unix service startup
-│   ├── stop_gateway.sh         # Service termination
-│   └── download_datasets.py    # Training data acquisition
-│
-├── docs/                       # Documentation
-│   └── architecture.md         # Detailed system design
-│
-├── requirements.txt            # Python dependencies
-├── docker-compose.yml          # Container orchestration
-├── Dockerfile                  # Container image definition
-├── CHANGELOG.md                # Change log
-└── README.md                   # This file
+│   ├── models/
+│   │   ├── scratch_transformer.py      # Core AI model — Transformer from scratch
+│   │   └── bert_classifier.py          # Larger variant (ScratchBERTClassifier)
+│   ├── gateway/
+│   │   ├── smtp_handler.py             # SMTP proxy — orchestrates all layers
+│   │   ├── email_parser.py             # RFC 822 email parser
+│   │   └── queue_manager.py            # Async email processing queue
+│   ├── features/
+│   │   ├── authentication_verification.py  # SPF / DKIM / DMARC
+│   │   ├── external_intelligence.py        # VirusTotal, WHOIS, Google SB
+│   │   ├── text_features.py                # Hand-crafted NLP features
+│   │   ├── url_features.py                 # URL structural analysis
+│   │   ├── metadata_features.py            # Header anomaly detection
+│   │   ├── warning_injection.py            # Visual warning injection
+│   │   ├── click_time_protection.py        # URL rewriting proxy
+│   │   └── performance_metrics.py          # Runtime telemetry
+│   ├── data/
+│   │   ├── collector.py                # Dataset downloader
+│   │   ├── preprocessor.py             # Text cleaning pipeline
+│   │   ├── loader.py                   # PyTorch Dataset wrapper
+│   │   └── augmenter.py                # Synthetic data generation
+│   ├── training/
+│   │   ├── trainer.py                  # Full training loop
+│   │   ├── config.py                   # Hyperparameter dataclasses
+│   │   ├── evaluate.py                 # Evaluation and threshold search
+│   │   └── cross_validation.py         # Stratified k-fold CV
+│   ├── inference/
+│   │   ├── predictor.py                # Combined scoring (model + external + heuristic)
+│   │   ├── batch_predictor.py          # Batch inference with progress
+│   │   └── explainer.py                # Human-readable prediction explanations
+│   ├── api/
+│   │   └── main.py                     # FastAPI application
+│   ├── dashboard/
+│   │   ├── app.py                      # Streamlit entry point
+│   │   ├── alerts.py                   # Alert visualisation components
+│   │   ├── admin.py                    # Admin panel (users, logs, training)
+│   │   └── analytics.py               # Performance charts and dataset explorer
+│   ├── alerting/
+│   │   └── email.py                    # Gmail alert sender
+│   └── utils/
+│       ├── config.py                   # Environment-based settings
+│       ├── logger.py                   # Loguru configuration
+│       ├── helpers.py                  # Cache, score calculator
+│       └── validators.py              # Email, URL, domain validation
+├── scripts/
+│   ├── train_model.py                  # Model trainer CLI with time cap and tqdm
+│   ├── download_datasets.py            # Dataset downloader and merger
+│   ├── demo_scenarios.py               # Live demo runner
+│   └── start_gateway.sh / .bat        # Service startup scripts
+├── tests/
+│   ├── test_features/                  # Warning injection, click-time tests
+│   ├── test_models/                    # Model load and prediction tests
+│   └── test_api/                       # FastAPI integration tests
+├── run.py                              # One-file launcher
+├── docker-compose.yml
+├── Dockerfile
+├── requirements.txt
+└── .env
 ```
 
 ---
 
-## 📊 MONITORING & METRICS
+## Running Tests
 
-The system provides comprehensive real-time monitoring:
+```bash
+# Full test suite
+pytest tests/ -v
 
-**Dashboard Features**:
-- 📈 Live email processing rates
-- 🎯 Threat detection percentages
-- ⚠️ Warning injection statistics
-- 🔒 URL rewriting counts
-- 🚫 Quarantine monitoring
-- 📊 Hourly/daily trend analysis
-- 📋 Recent email activity feed
-- 🚨 Alert management interface
+# Specific modules
+pytest tests/test_features/test_warning_injection.py -v
+pytest tests/test_models/test_bert.py -v
+pytest tests/test_api/test_api.py -v
 
-**API Endpoints**:
-- `GET /stats` - System performance metrics
-- `GET /alerts` - Security alerts retrieval
-- `POST /check-email` - Individual email analysis
-- `GET /health` - System health status
+# System self-test (checks model + all feature modules)
+python run.py --test
+```
 
 ---
 
-## 📈 PERFORMANCE & SCALABILITY
+## Performance
 
-**Processing Pipeline Latency**:
-- Email parsing: <5ms
-- Authentication verification: 10-50ms (DNS-dependent)
-- AI threat analysis: 80-150ms (TinyBERT inference)
-- Warning injection: <5ms
-- Click-time protection: <2ms per URL
-- **Total**: ~150-250ms per email
-
-**Throughput Capabilities**:
-- Single instance: ~200-400 emails/minute
-- Horizontal scaling: Add more SMTP gateway instances
-- Queue buffering: Handles traffic spikes gracefully
-- Memory efficient: <500MB RAM typical usage
-
-**Monitoring Overhead**:
-- Metrics collection: <1ms per email
-- Dashboard updates: Configurable refresh intervals
-- Log rotation: Automatic size-based cleanup
+At typical CPU inference speeds (no GPU), end-to-end latency per email is roughly 150–300 ms. With CUDA the model inference portion drops to under 20 ms. Throughput on a single instance is approximately 200–400 emails per minute. The async queue in `queue_manager.py` buffers traffic spikes gracefully.
 
 ---
 
-## 🔐 SECURITY & COMPLIANCE
+## License
 
-**Data Protection**:
-- No persistent storage of email content by default
-- Configurable data retention policies
-- PII masking in logs and alerts
-- Secure credential management via environment variables
+MIT License — see `LICENSE` for details.
 
-**Compliance Ready**:
-- Audit logging for all processing decisions
-- Configurable data retention and deletion
-- Role-based access control (dashboard)
-- Encryption in transit (TLS for external services)
-- Regular security scanning compatible
-
----
-
-## 🛠️ DEVELOPMENT & EXTENSIBILITY
-
-**Adding New Features**:
-1. Create new feature module in `src/features/`
-2. Integrate into `smtp_handler.py` processing pipeline
-3. Add metric collection if needed
-4. Update dashboard if visualization required
-5. Write unit tests in `tests/test_features/`
-
-**Customization Points**:
-- Threat scoring weights and thresholds
-- Warning banner templates and content
-- Trusted domain lists (whitelists)
-- External API integrations
-- Alert routing and escalation policies
-- Model retraining schedules and data sources
-
----
-
-## 🚀 DEPLOYMENT OPTIONS
-
-### **Development / Testing**
-- Local execution with virtual environment
-- Docker compose for service orchestration
-- Individual service testing via direct execution
-
-### **Production Deployment Options**:
-1. **Container Orchestration**: Kubernetes or Docker Swarm
-2. **Cloud Native**: AWS ECS/EKS, Azure Container Instances, GCP Cloud Run
-3. **Traditional VM**: Systemd services or process supervisors
-4. **Hybrid**: API/Dashboard in cloud, SMTP gateway on-prem
-
-**Scaling Strategies**:
-- **Horizontal**: Multiple SMTP gateway instances behind load balancer
-- **Vertical**: Increased resources for high-volume instances
-- **Geographic**: Regional instances for localized threat intelligence
-- **Specialized**: Dedicated instances for high-risk domains/users
-
----
-
-## 📋 ROADMAP & FUTURE ENHANCEMENTS
-
-**Completed (v1.0)**:
-- [x] Layer 1: Authentication Verification (SPF/DKIM/DMARC)
-- [x] Layer 2: AI Threat Detection (TinyBERT + Threat Intel)
-- [x] Layer 3: Visual Warning Injection
-- [x] Layer 4: Click-Time Protection
-- [x] Layer 5: Performance Metrics & Dashboard
-- [x] Full API REST interface
-- [x] Comprehensive test suite
-
-
----
-
-## 💬 GETTING SUPPORT
-
-**Documentation**:
-- Inline code comments and docstrings
-- API documentation at `/docs` endpoint
-- Architecture Decision Records (ADR) in `docs/`
-- Feature-specific documentation in source headers
-
-**Community**:
-- Issue tracking via GitHub Issues
-- Discussion forums for usage questions
-- Contribution guidelines for developers
-- Security vulnerability reporting process
-
-**Professional Services**:
-- Custom feature development
-- Performance tuning and optimization
-- Integration with existing security infrastructure
-- Training and knowledge transfer sessions
-
----
-
-## 📜 LICENSE
-
-MIT License - see `LICENSE` file for details.
-
-**Copyright (c) 2026 Email Security Gateway Contributors**
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-
----
+Copyright (c) 2026 Email Security Gateway Contributors
